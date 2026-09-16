@@ -1,5 +1,7 @@
 # BAMPC
 
+Code for the paper *Do My Samples Help? Compute Budget Allocation for Real-World Sampling-Based MPC in Contact-Rich Manipulation* (under review).
+
 Risk-aware sampling-based model predictive control on
 [MuJoCo Warp](https://mujoco.readthedocs.io/en/latest/mjwarp/). Many control
 samples are rolled out in parallel on the GPU across randomized physics
