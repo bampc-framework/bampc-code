@@ -1,0 +1,6 @@
+# Reward weights for Balance (bampc/config/reward.py). Its cost is a
+# plain distance to a point, so there is nothing to trade off -- just the goal
+# and the failure threshold.
+goal_xy: [0.05, 0.06]
+# Drop (m) below resting height before the episode counts as lost.
+lost_margin: 0.16

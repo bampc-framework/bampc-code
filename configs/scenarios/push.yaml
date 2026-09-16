@@ -1,0 +1,48 @@
+# Frozen start states for Push. See bampc/config/scenarios.py. Generated
+# by scripts/probing/make_scenarios.py, which samples a Latin hypercube over the
+# ranges below and validates each pose on CPU MuJoCo. Re-validate with `--check`
+# after any model change.
+#
+# `pusher_xy` is a JOINT coordinate, not a world one -- the pusher body carries
+# pos="0 0.1 0.011", so world = pusher_xy + (0, 0.1). The standoff is a 6-25 mm
+# surface clearance bisected in the world frame, because a fixed radial offset
+# from the block's joint origin buries the pusher inside the asymmetric T.
+
+task: push
+# The bank is only valid for the geometry it was generated against: shape
+# sets both the resting height and the clearance the standoff was solved for.
+shape: t
+scale: 1.0
+# Goal is compiled at the world origin.
+goal_xy: [0.0, 0.0]
+
+# One drift for every experiment on this task, so a run's excitation is
+# never an uncontrolled variable. Speed is the binding constraint, not
+# amplitude: the goal peaks at 2*pi*f*radius = 1.9 cm/s here, which the
+# pusher can still shepherd a T-block after (block/goal correlation ~ +0.9).
+goal_drift:
+  radius_xy: [0.06, 0.06]
+  freq_xy: [0.03, 0.05]
+  yaw_amp: 0.15
+  yaw_freq: 0.04
+
+# drift_phase_time is spread evenly over the slowest drift period (1/0.03 =
+# 33.3 s), so the 16 scenarios sample the goal trajectory uniformly instead
+# of each drawing a random phase.
+scenarios:
+  - {block_xy: [-0.0842, -0.0572], block_yaw: -0.1785, pusher_xy: [-0.1097, -0.2034], drift_phase_time: 0.0}
+  - {block_xy: [0.0621, -0.0296], block_yaw: -0.0108, pusher_xy: [0.1877, -0.1691], drift_phase_time: 2.083}
+  - {block_xy: [0.0103, -0.1307], block_yaw: -0.3279, pusher_xy: [0.0603, -0.3255], drift_phase_time: 4.167}
+  - {block_xy: [0.0999, 0.0523], block_yaw: 0.1439, pusher_xy: [0.2287, -0.0026], drift_phase_time: 6.25}
+  - {block_xy: [-0.1475, 0.1201], block_yaw: -0.2998, pusher_xy: [-0.1902, 0.0895], drift_phase_time: 8.333}
+  - {block_xy: [-0.0422, 0.0053], block_yaw: -0.4697, pusher_xy: [-0.1109, -0.0809], drift_phase_time: 10.417}
+  - {block_xy: [-0.0945, 0.1073], block_yaw: 0.2213, pusher_xy: [-0.0893, 0.0498], drift_phase_time: 12.5}
+  - {block_xy: [-0.072, -0.0756], block_yaw: -0.2177, pusher_xy: [-0.0684, -0.2164], drift_phase_time: 14.583}
+  - {block_xy: [-0.1196, 0.0896], block_yaw: -0.0867, pusher_xy: [-0.1499, 0.0441], drift_phase_time: 16.667}
+  - {block_xy: [0.132, -0.0088], block_yaw: 0.4662, pusher_xy: [0.2735, -0.1155], drift_phase_time: 18.75}
+  - {block_xy: [0.1245, 0.0722], block_yaw: 0.0996, pusher_xy: [0.2529, 0.0221], drift_phase_time: 20.833}
+  - {block_xy: [0.0345, 0.1408], block_yaw: 0.2819, pusher_xy: [0.0991, 0.131], drift_phase_time: 22.917}
+  - {block_xy: [0.0778, -0.1346], block_yaw: 0.3552, pusher_xy: [0.1665, -0.3147], drift_phase_time: 25.0}
+  - {block_xy: [-0.0339, -0.0975], block_yaw: -0.4255, pusher_xy: [-0.0181, -0.2741], drift_phase_time: 27.083}
+  - {block_xy: [-0.0027, -0.0401], block_yaw: 0.4298, pusher_xy: [0.0366, -0.1873], drift_phase_time: 29.167}
+  - {block_xy: [0.0426, 0.0189], block_yaw: 0.0404, pusher_xy: [0.1711, -0.0431], drift_phase_time: 31.25}

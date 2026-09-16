@@ -1,0 +1,17 @@
+# Solver/integrator options for Push-FR3 with a 6-DOF free block
+# (--manipulation free).
+
+timestep: 0.01
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 10
+ls_iterations: 16
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

@@ -1,0 +1,51 @@
+name: dr-mismatch-balance-mass-truth-20hz-v1
+task: balance_fr3
+
+# 20 Hz twin of mass_truth_10hz_v1 -- read that config's header for the
+# full motivation (does the mass_<mult> sensitivity hold regardless of
+# which real ball is on the plate) and for how this rate's own budget is
+# bisected. Same true_bias_grid, same arms, same num_seeds; only
+# plan_freq_hz and sample_budget differ.
+
+scenario_bank: balance_fr3
+bias_params: [mass]
+
+planner:
+  profile: balance_fr3
+  overrides: {algo: mppi, sample_budget: 2800}  # this rate's real-time budget
+
+prediction:
+  numerics: balance_fr3
+truth:
+  backend: warp
+  numerics: balance_fr3
+
+bias_target: truth_grid
+true_bias_grid: [0.3, 3.0]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 20
+
+num_domains: 10  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [mppi]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - mass_0.02
+  - mass_0.1
+  - mass_0.25
+  - mass_0.5
+  - mass_2.0
+  - mass_4.0
+  - mass_10.0
+  - mass_50.0
+
+task_params:
+  sampling_space: joint
+  reward_profile: balance_fr3

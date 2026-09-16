@@ -1,0 +1,17 @@
+# Reward weights for balance_fr3 (bampc/config/reward.py). w_pos/
+# max_tilt_vel/terminal_scale are tuned; the rest sit at BalanceFr3's own
+# constructor defaults. goal_xy is used by the examples and ignored by sweeps,
+# which take it from the scenario bank instead.
+w_pos: 30.0
+w_orient: 0.0
+w_ctrl: 0.0
+max_tilt_vel: 1.0
+terminal_scale: 7.0
+k_pos: 1.0
+k_yaw: 1.0
+goal_xy: [0.0, 0.0]
+# Drop (m) below resting height before the episode counts as lost.
+lost_margin: 0.16
+by_sampling:
+  task: {w_arm_home: 0.0}
+  joint: {w_arm_home: 15.0}

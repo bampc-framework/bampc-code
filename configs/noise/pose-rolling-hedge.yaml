@@ -1,0 +1,7 @@
+# Position-only sensor for --rolling-sensor: nothing measures the ball's
+# velocity directly (it's derived via finite difference + the no-slip
+# rolling constraint, see ros.adapters.balance_fr3), so there is no
+# twist_gaussian term here -- an error in a derived velocity is a
+# systematic factor, not additive jitter (see AngularVelocityScale).
+- {kind: se3_bias, pos: [0.0, 0.0, -0.02], rot: [0.0, 0.0, 0.0]}
+- {kind: se3_gaussian, pos_std: 0.003, rot_std: 0.001}

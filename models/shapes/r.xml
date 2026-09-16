@@ -1,0 +1,19 @@
+<mujoco model="shape_r">
+  <worldbody>
+    <body name="shape">
+      <geom name="stem" type="box" size="0.014 0.07 0.025"
+        pos="-0.045 0.0 0.0" />
+      <geom name="bowl_top" type="box" size="0.035 0.014 0.025"
+        pos="-0.01 0.07 0.0" />
+      <geom name="bowl_right" type="box" size="0.014 0.03 0.025"
+        pos="0.025 0.04 0.0" />
+      <geom name="bowl_bot" type="box" size="0.035 0.014 0.025"
+        pos="-0.01 0.02 0.0" />
+      <geom name="leg" type="box" size="0.013 0.05 0.025"
+        pos="0.0125 -0.02 0.0" quat="0.9588 0 0 0.2840" />
+      <site name="attractor_site1" pos="-0.045 0.07 0.0" size="0.015" />
+      <site name="attractor_site2" pos="-0.045 -0.07 0.0" size="0.015" />
+      <site name="attractor_site3" pos="0.045 -0.07 0.0" size="0.015" />
+    </body>
+  </worldbody>
+</mujoco>

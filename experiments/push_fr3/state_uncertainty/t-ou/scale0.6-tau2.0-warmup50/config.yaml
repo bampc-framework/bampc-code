@@ -1,0 +1,107 @@
+name: fr3-free-perf-t-ou-scale0.6-tau2.0-warmup50
+
+task: push_fr3
+
+# Low-noise corner of the warmup50 grid: small magnitude (0.6) at the
+# longest tau in the grid (2.0s), i.e. a modest per-reading error held for
+# a long time -- an occlusion-like lag rather than a large error. Sits
+# opposite scale2.4-tau1.0-warmup50 (large error, short lag) as the other
+# corner of the scale x tau grid, sharing that cell's planner shape,
+# roster and warmup-50 settings.
+
+scenario_bank: push_fr3_t
+
+planner:
+  profile: push_fr3
+  overrides:
+    algo: ps
+    settle_steps: 2
+    sample_budget: 13500
+
+prediction:
+  numerics: fr3_free
+truth:
+  backend: warp
+  numerics: fr3_free
+
+num_seeds: 8
+repeats: 3
+
+rollout_time: 20.0
+plan_freq_hz: 10
+
+algos: [ps, cem]
+
+arms:
+  # oracle's results are symlinked in from ../oracle-warmup50/ rather than
+  # run here -- it has no sensor, so it is identical across every
+  # warmup50 cell sharing this planner/scenario/num_seeds/repeats.
+  - oracle
+  - naive
+  - point
+  - ensemble_double_r4
+  - ensemble_double_r16
+  - ensemble_double_r32
+  - ensemble_triple_r32
+  - ensemble_quintuple_r32
+  - ensemble_octuple_r32
+
+arm_overrides:
+  ensemble_double_r4: {num_domains: 4}
+  ensemble_double_r16: {num_domains: 16}
+  ensemble_double_r32: {num_domains: 32}
+  ensemble_triple_r32: {num_domains: 32}
+  ensemble_quintuple_r32: {num_domains: 32}
+  ensemble_octuple_r32: {num_domains: 32}
+
+# Risk ablation on the triple_r32 ensemble, matching the sibling warmup50
+# cells' convention (see scale2.4-tau1.0-warmup50's own comment): does
+# trading the planner's risk strategy (not the belief's sigma) change
+# anything relative to triple_r32's plain average-risk run?
+# cvar_alpha = average over the worst alpha-fraction of domains
+# (risk-averse, smaller alpha = more pessimistic); inverse_cvar_alpha =
+# average over the best alpha-fraction (risk-seeking); bestcase/worstcase
+# = min/max over all domains, the two extremes of the same axis.
+risk_arms: [ensemble_triple_r32]
+risk_grid:
+  - [average, null]
+  - [cvar, 0.5]
+  - [inverse_cvar, 0.5]
+  - [cvar, 0.2]
+  - [inverse_cvar, 0.2]
+  - [worstcase, null]
+  - [bestcase, null]
+
+sensor:
+  preset: pose-ou
+  scale: 0.6
+  tau: 2.0
+  observe_velocity: false
+  twist_estimator: finite_difference
+  bias_directions: 4
+  bias_wander_period: 0.0
+
+belief:
+  num_domains: 29
+  sigma_scale: 1.0
+  double_sigma_scale: 2.0
+  triple_sigma_scale: 3.0
+  quintuple_sigma_scale: 5.0
+  octuple_sigma_scale: 8.0
+  fixed_noise: pose-ou-fixed
+  fixed_sigma_scale: 0.6
+  fixed_double_sigma_scale: 1.2
+  fixed_triple_sigma_scale: 1.8
+  fixed_twist_sigma_scale: 0.6
+  estimator: ensemble
+
+kalman:
+  accel_std: 0.2
+  ang_accel_std: 1.0
+  warmup_steps: 50
+
+task_params:
+  sampling_space: task
+  manipulation_type: free
+  reward_profile: push_fr3
+  w_align: 0.9

@@ -1,0 +1,4 @@
+# Unbiased camera: a few mm of position, ~3 deg of yaw, and the velocity you
+# get from differentiating that.
+- {kind: se3_gaussian,   pos_std: 0.007, rot_std: 0.05}
+- {kind: twist_gaussian, lin_std: 0.02,  ang_std: 0.1}

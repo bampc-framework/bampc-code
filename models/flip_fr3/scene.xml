@@ -1,0 +1,107 @@
+<!-- Flip-FR3, free (6-DOF) box model. Mirrors models/push_fr3/free/scene.xml,
+     plus a static "wall" body geoms are grafted onto when FlipFr3(wall=True). -->
+
+<mujoco model="flip_fr3 scene">
+
+  <default>
+
+    <geom contype="7" conaffinity="7" />
+
+    <default class="block">
+      <geom friction="0.8 0.001 0.01"
+        solref="0.02 1.0"
+        solimp="0.9 0.95 0.001 0.5 2"
+        condim="3"
+        contype="2"
+        conaffinity="5" />
+    </default>
+
+    <default class="goal">
+      <geom conaffinity="0"
+        contype="0"
+        rgba="0 1 0 0.1" />
+    </default>
+
+    <default class="wood">
+      <geom friction="0.6"
+        solref="0.03 1.0"
+        solimp="0.9 0.95 0.001 0.5 2"
+        rgba="0.65 0.65 0.65 1.0"
+        condim="3" contype="4" conaffinity="3" />
+    </default>
+
+  </default>
+
+  <worldbody>
+    <camera name="top_view" pos="-0.276 -0.512 0.817" xyaxes="0.864 -0.503 0.000 0.404 0.694 0.596" />
+    <camera name="main" pos="1.385 -0.332 1.229" xyaxes="0.232 0.973 0.000 -0.755 0.180 0.631"/>
+
+    <!-- Grafted from the chosen shape at build time; pos.z is overwritten
+         with the block's resting height. -->
+    <body name="goal" mocap="true" pos="0.5 0.25 0.0" quat="0.7071 0 0 0.7071">
+    </body>
+
+    <body name="ground" pos="0.5 0.0 0.0075" quat="1 0 0 -1">
+      <geom class="wood" name="ground" type="box" size="0.45 0.45 0.0075" />
+    </body>
+
+    <!-- Placeholder: _build_model overwrites pos.z and quat with
+         task.flip_fr3._LYING_QUAT. Edit that constant, not this XML. -->
+    <body name="block" pos="0.5 -0.1 0.0" quat="1 0 0 0">
+      <joint name="block" type="free" pos="0 0 0" />
+    </body>
+
+    <!-- Placeholder: _build_model overwrites pos with task.flip_fr3._WALL_POS.
+         Edit that constant, not this XML. -->
+    <body name="wall" pos="0.3 0.0 0.0">
+    </body>
+  </worldbody>
+
+  <include file="../fr3/fr3_arm.xml" />
+
+  <!-- MUST come after the include: overrides the arm's meshdir. -->
+  <compiler angle="radian" meshdir="../fr3/assets" />
+
+  <sensor>
+    <framequat name="orientation" objtype="body" objname="block" reftype="body" refname="goal" />
+    <framequat name="orientation_world" objtype="body" objname="block" />
+    <framequat name="goal_orientation_world" objtype="body" objname="goal" />
+
+    <framepos name="ee_t1" objtype="body" objname="ee_frame" reftype="site" refname="attractor_site1" />
+    <framepos name="ee_t2" objtype="body" objname="ee_frame" reftype="site" refname="attractor_site2" />
+    <framepos name="ee_t3" objtype="body" objname="ee_frame" reftype="site" refname="attractor_site3" />
+
+    <framezaxis name="ee_zaxis" objtype="body" objname="ee_frame" />
+
+    <framezaxis name="block_zaxis" objtype="body" objname="block" />
+  </sensor>
+
+  <keyframe>
+    <!-- Block xyz is a placeholder, overwritten at build time. -->
+    <key name="home"
+      qpos="0.5 0 0.0 1 0 0 0 -0.950473 0.559884 0.808206 -2.336123  -0.866394 2.619831 -0.075498 "
+      ctrl="0 0 0 0 0 0 0" />
+  </keyframe>
+
+
+
+  <statistic center="0.4 0 0.0" extent="1.0" />
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512"
+      height="3072" />
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4"
+      rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300" />
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"
+      reflectance="0.2" />
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true" />
+    <geom name="floor" type="plane" size="0 0 0.0001"
+      material="groundplane"
+      contype="0" conaffinity="0" />
+
+  </worldbody>
+</mujoco>

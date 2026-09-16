@@ -1,0 +1,7 @@
+# Default belief of the Balance-FR3 ROS node when --domains > 1 (with
+# --estimator ensemble_fixed): a fixed pose spread plus the angular-velocity
+# hedge. The hedge is a correction, not a spread, so call sites apply it
+# under every --estimator (see AngularVelocityScale). 1.0 is a no-op; raise
+# it if the ball rolls faster than the no-slip prediction.
+- {kind: se3_gaussian, pos_std: 0.004, rot_std: 0.01}
+- {kind: angular_velocity_scale, factor: 1.0}

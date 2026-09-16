@@ -1,0 +1,19 @@
+# Solver profile for Peg-FR3. Insertion is contact-rich and stiff, so it carries
+# fr3_free's higher iteration counts, differing from it in timestep alone.
+# Its own file because the profile *name* is what a results dir records --
+# tuning insertion must not silently retune Push-FR3.
+
+timestep: 0.02
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 10
+ls_iterations: 16
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

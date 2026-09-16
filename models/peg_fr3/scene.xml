@@ -1,0 +1,95 @@
+<!-- Peg-FR3: the FR3 inserts a rigidly mounted peg into a socket. The peg is
+     NOT in this XML — models/fr3/ee_peg.xml is attached in Python, and the
+     sensors below name bodies that attach creates, so a raw XML load will not
+     compile. Sizes here are a self-consistent default: build_peg_spec derives
+     peg and socket from one `clearance`, so the fit cannot drift apart. -->
+
+<mujoco model="peg_fr3 scene">
+
+  <!-- Solver options live in Python (configs/numerics/peg_fr3.yaml). -->
+
+  <default>
+    <default class="socket">
+      <!-- Bit 8 pairs with the peg, bit 2 with the arm: the arm cannot drive
+           through the socket, though it never touches the peg it carries. -->
+      <geom type="box" contype="6" conaffinity="8" condim="3"
+        friction="0.4" solref="0.02 1.0" solimp="0.9 0.95 0.002 0.5 2"
+        rgba="0.55 0.57 0.6 1" />
+    </default>
+
+    <default class="goal">
+      <geom conaffinity="0" contype="0" rgba="0 1 0 0.15" />
+    </default>
+  </default>
+
+  <worldbody>
+    <camera name="main" pos="1.360 -0.509 0.786" xyaxes="0.400 0.916 0.000 -0.416 0.182 0.891" />
+    <camera name="top_view" pos="0.5 0.0 0.75" xyaxes="0 1 0 -1 0 0" />
+
+    <!-- The base plate gives the hole a bottom: the floor plane is visual-only
+         here, so without it the peg sinks through with no seating stop. -->
+    <body name="socket" pos="0.5 0.0 0.0" childclass="socket">
+      <geom name="socket_base" size="0.05 0.05 0.005" pos="0 0 0.005" />
+      <geom name="socket_xn" size="0.018 0.05 0.03" pos="-0.032 0 0.04" />
+      <geom name="socket_xp" size="0.018 0.05 0.03" pos="0.032 0 0.04" />
+      <geom name="socket_yn" size="0.014 0.018 0.03" pos="0 -0.032 0.04" />
+      <geom name="socket_yp" size="0.014 0.018 0.03" pos="0 0.032 0.04" />
+      <site name="hole" pos="0 0 0.07" size="0.006" rgba="1 0.6 0 0.6" />
+    </body>
+
+    <!-- Ghost peg at the seated pose; kept a mocap for the shared `goal`
+         machinery. -->
+    <body name="goal" mocap="true" pos="0.5 0.0 0.13" quat="0 1 0 0">
+      <geom name="goal_peg" class="goal" type="box" size="0.012 0.012 0.06"
+        pos="0 0 0.06" />
+    </body>
+  </worldbody>
+
+  <include file="../fr3/fr3_arm.xml" />
+
+  <!-- MUST come after the include: overrides the arm's meshdir. -->
+  <compiler angle="radian" meshdir="../fr3/assets" />
+
+  <sensor>
+    <framepos name="position" objtype="body" objname="peg_body" reftype="body"
+      refname="goal" />
+    <framequat name="orientation" objtype="body" objname="peg_body"
+      reftype="body" refname="goal" />
+
+    <framepos name="position_world" objtype="body" objname="peg_body" />
+    <framequat name="orientation_world" objtype="body" objname="peg_body" />
+    <framepos name="goal_position_world" objtype="body" objname="goal" />
+    <framequat name="goal_orientation_world" objtype="body" objname="goal" />
+
+    <framezaxis name="peg_zaxis" objtype="body" objname="peg_body" />
+
+    <framepos name="tip_hole" objtype="site" objname="peg_tip" reftype="site"
+      refname="hole" />
+  </sensor>
+
+  <keyframe>
+    <!-- Only the arm has DOFs here, so qpos is 7 values — unlike the other
+         FR3 scenes, where the block's come first. -->
+    <key name="home"
+      qpos="0.85377095 0.27745955 -0.82576069 -2.38775275 0.36781962 2.54686985 -0.26156682"
+      ctrl="0 0 0 0 0 0 0" />
+  </keyframe>
+
+  <statistic center="0.45 0 0.15" extent="0.9" />
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0"
+      width="512" height="3072" />
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge"
+      rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300"
+      height="300" />
+    <material name="groundplane" texture="groundplane" texuniform="true"
+      texrepeat="5 5" reflectance="0.2" />
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true" />
+    <geom name="floor" type="plane" size="0 0 0.0001" material="groundplane"
+      contype="0" conaffinity="0" />
+  </worldbody>
+</mujoco>

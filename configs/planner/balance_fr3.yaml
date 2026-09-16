@@ -1,0 +1,23 @@
+# Planner tuning for balance_fr3. See configs/planner/push_fr3.yaml for the
+# "every field present, algo-agnostic" rationale.
+risk: average
+num_samples: 800
+plan_horizon: 0.6
+num_knots: 4
+spline_type: cubic
+elite_frac: 0.05
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 0.7
+risk_alpha: 0.5
+risk_gamma: 1.0
+settle_steps: 0
+# Both below are at their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+best_sample_execution: false
+# Sampling bound for "joint" sampling only; "task" has its own (max_tilt_vel).
+ctrl_range_scale: 0.6
+by_sampling:
+  task: {noise_level: 0.2, init_std: 0.2}
+  joint: {noise_level: 0.3, init_std: 0.3}

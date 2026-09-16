@@ -1,0 +1,24 @@
+# Shared planner tuning for Push, across simple/domain_randomization/
+# state_uncertainty (bampc/config/planner.py). No sweep uses it; it
+# keeps Push's 3 example regimes on one file instead of 3 copies.
+risk: worstcase
+num_samples: 128
+plan_horizon: 0.5
+num_knots: 5
+spline_type: zero
+elite_frac: 0.1
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 0.01
+init_std: 0.3
+risk_alpha: 0.1
+risk_gamma: 1.0
+settle_steps: 0
+# At their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+best_sample_execution: false
+ctrl_range_scale: 1.0
+by_algo:
+  mppi: {noise_level: 0.3}
+  default: {noise_level: 0.2}

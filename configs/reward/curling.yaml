@@ -1,0 +1,43 @@
+# Reward weights for Curling-FR3 (bampc/config/reward.py). Flat: task-
+# space sampling and a free puck are its only options, so no by_sampling block.
+
+# The shot. terminal_scale is what makes this a shooting task and not a pushing
+# one: the running term only shapes, the terminal term is the verdict.
+w_pos: 50.0
+terminal_scale: 20.0
+
+# Terminal-only, and what stops the planner cheating: on distance alone a shot
+# passing THROUGH the house scores zero and beats one stopping 10 cm short.
+w_stop: 200.0
+
+# Approach shaping, per-step, all zeroed in the terminal cost. w_align (EE
+# behind the puck on the house line) is what makes the arm set up a shot rather
+# than nudge the puck sideways; w_lat_vel charges only side-slip. UNVERIFIED.
+w_attract: 0.15
+w_align: 0.3
+w_lat_vel: 0.0
+
+# Soft margin only -- CurlingFr3's IK barrier enforces the box exactly. This
+# just keeps the sampler's mean off the wall, where a cone of samples collapses
+# onto one clamped rollout.
+w_box: 2.0
+box_gain: 10.0
+
+# Scoring: stop within house_radius of goal_xy, below rest_speed.
+house_radius: 0.08
+rest_speed: 0.02
+
+# Off, as in push_fr3's task-space branch: the IK keeps the arm conditioned.
+w_ee_orient: 0.0
+w_ee_height: 0.0
+w_arm_home: 0.0
+
+# Once the puck clears the box the shot is open-loop, so every term above gates
+# to zero and this is the only running cost left. UNVALIDATED.
+w_post_release: 10
+
+# EE twist bound. This and the house distance are ONE choice: MPPI averages over
+# sampled shots, so as the needed speed nears the bound the samples clip on one
+# side and the mean lands short. The lane's verified ceiling is 1.1 m/s (see
+# configs/numerics/curling.yaml) -- re-run scripts/curling/range_check.py first.
+max_lin_vel: 1.5

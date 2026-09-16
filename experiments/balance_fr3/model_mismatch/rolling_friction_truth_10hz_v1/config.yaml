@@ -1,0 +1,76 @@
+name: dr-mismatch-balance-rolling-friction-truth-10hz-v1
+task: balance_fr3
+
+# Rolling-friction-mismatch-per-truth-level grid, the rolling_friction
+# twin of friction_truth_10hz_v1 (read that config's header first -- same
+# bias_target: truth_grid mechanism).
+#
+# The current nominal ball rolling friction (1e-5) sits exactly on
+# mjMINMU, MuJoCo's hard numerical floor, so a decrease-direction arm off
+# that baseline is unrepresentable -- every multiplier below 1.0x lands on
+# the same floored value. This grid therefore does NOT include 1e-5 as a
+# cell: every level here sits well clear of the floor so both directions of
+# every arm are real.
+#
+# true_bias_grid multipliers (200x/1000x) of the nominal ball rolling
+# friction 1e-5 (from the compiled balance_fr3 task): 2e-3 (low, roughly
+# steel-ball-like rolling resistance) / 1e-2 (high, roughly rubber-ball-
+# like) -- both ends of a physically plausible rolling-resistance range
+# for a hard ball on a hard plate; chosen so even this grid's smallest
+# cell's 0.02x arm (4e-5) stays 4x clear of the 1e-5 mjMINMU floor.
+# Neither matches the current nominal on purpose -- see the note above.
+# The middle truth level (500x = 5e-3) is dropped: 3 levels x 2 params x 3
+# rates x 2 tasks doesn't fit an overnight full-mode budget (see
+# mass_truth_10hz_v1's header).
+#
+# 10 Hz leg -- see mass_truth_10hz_v1's header for how this family's budget
+# is bisected, and why it is per rate.
+#
+# num_seeds=4/repeats=4 (not the usual 8/4) -- see mass_truth_10hz_v1's
+# header for the overnight-budget rationale.
+#
+# Only bias_target, true_bias_grid, bias_params (rolling_friction only),
+# sample_budget and num_seeds differ from the other legs of this family.
+
+scenario_bank: balance_fr3
+bias_params: [rolling_friction]
+
+planner:
+  profile: balance_fr3
+  overrides: {algo: mppi, sample_budget: 9000}  # this rate's real-time budget
+
+prediction:
+  numerics: balance_fr3
+truth:
+  backend: warp
+  numerics: balance_fr3
+
+bias_target: truth_grid
+true_bias_grid: [200, 1000]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 10
+
+num_domains: 10  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [mppi]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - rolling_friction_0.02
+  - rolling_friction_0.1
+  - rolling_friction_0.25
+  - rolling_friction_0.5
+  - rolling_friction_2.0
+  - rolling_friction_4.0
+  - rolling_friction_10.0
+  - rolling_friction_50.0
+
+task_params:
+  sampling_space: joint
+  reward_profile: balance_fr3

@@ -1,0 +1,23 @@
+<mujoco model="ee_peg">
+  <!-- Peg end effector, authored relative to fr3_arm.xml's `attachment_site`.
+       Two bodies on purpose: `ee_frame` is the IK target and carries NO
+       geometry, while `peg_body`'s pos/quat IS the mount misalignment. Put the
+       geom on `ee_frame` and the planner implicitly knows the misalignment,
+       i.e. the experiment is rigged. -->
+  <worldbody>
+    <body name="ee_frame" pos="0 0 0" gravcomp="1">
+      <site name="ee_site" pos="0 0 0" size="0.01" />
+
+      <body name="peg_body" pos="0 0 0" quat="1 0 0 0" gravcomp="1">
+        <!-- Pairs with the socket walls and nothing else: both masks against
+             the arm are 0, so the tool never hits the arm carrying it. -->
+        <geom name="peg" type="box" size="0.012 0.012 0.06" pos="0 0 0.06"
+          mass="0.2" contype="8" conaffinity="4"
+          friction="0.3" condim="3"
+          solref="0.02 1.0" solimp="0.9 0.95 0.002 0.5 2"
+          rgba="0.15 0.15 0.18 1" />
+        <site name="peg_tip" pos="0 0 0.12" size="0.008" />
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

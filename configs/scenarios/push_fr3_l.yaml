@@ -1,0 +1,46 @@
+# Frozen start states for Push-FR3 with an L block and a SLOW, NARROW goal
+# drift. See bampc/config/scenarios.py.
+#
+# The L-shape twin of push_fr3_t.yaml: same goal, drift and block poses,
+# different block GEOMETRY. A bank is not valid for another shape (standoff
+# clearance is solved against it), so the two are separate banks on purpose --
+# block_xy/block_yaw/drift_phase_time are copied from the T bank, ee_xy is
+# re-bisected to a 15.5 mm surface gap against the L.
+#
+# All 32 states validated for BOTH manipulation types (the larger standoff is
+# kept, so one bank serves joint and free). `gap` reads 0.0 at slot 6 -- that is
+# mj_geomDistance's spurious zero on FR3 box pairs, not an overlap; the verdict
+# is init_pen.
+
+task: push_fr3
+shape: l
+scale: 1.0
+goal_xy: [0.5, 0.0]
+
+
+goal_drift:
+  radius_xy: [0.04, 0.10]
+  freq_xy: [0.01, 0.02]
+  yaw_amp: 0.5
+  yaw_freq: 0.05
+
+scenarios:
+  - {block_xy: [0.5231, 0.1086], block_yaw: 0.2851, ee_xy: [0.619, 0.1354], drift_phase_time: 0.0}
+  - {block_xy: [0.4957, -0.0978], block_yaw: -0.513, ee_xy: [0.6471, -0.2001], drift_phase_time: 6.25}
+  - {block_xy: [0.4804, -0.0222], block_yaw: 0.1823, ee_xy: [0.6094, -0.0658], drift_phase_time: 12.5}
+  - {block_xy: [0.4547, 0.0193], block_yaw: 0.4986, ee_xy: [0.5777, 0.0456], drift_phase_time: 18.75}
+  - {block_xy: [0.5075, 0.0446], block_yaw: -0.3526, ee_xy: [0.6093, 0.0366], drift_phase_time: 25.0}
+  - {block_xy: [0.4594, -0.0529], block_yaw: -0.542, ee_xy: [0.5323, -0.0784], drift_phase_time: 31.25}
+  - {block_xy: [0.5328, 0.0914], block_yaw: -0.1755, ee_xy: [0.596, 0.1082], drift_phase_time: 37.5}
+  - {block_xy: [0.5197, 0.0495], block_yaw: 0.1306, ee_xy: [0.5892, 0.0606], drift_phase_time: 43.75}
+  # Slots 8-11: HARD "go-around" inits -- the EE starts ON the goal (0.5, 0)
+  # with the block placed away from it, so the arm must arc around the block
+  # to reach its far side before it can push.
+  - {block_xy: [0.5, 0.11], block_yaw: 0.3, ee_xy: [0.5, 0.0], drift_phase_time: 50.0}
+  - {block_xy: [0.5, -0.11], block_yaw: -0.3, ee_xy: [0.5, 0.0], drift_phase_time: 56.25}
+  - {block_xy: [0.55, 0.07], block_yaw: 0.5, ee_xy: [0.5, 0.0], drift_phase_time: 62.5}
+  - {block_xy: [0.4359, -0.0898], block_yaw: -0.5, ee_xy: [0.5, 0.0], drift_phase_time: 68.75}
+  - {block_xy: [0.5389, -0.0638], block_yaw: 0.5814, ee_xy: [0.6809, -0.0811], drift_phase_time: 75.0}
+  - {block_xy: [0.5015, 0.0878], block_yaw: -0.1373, ee_xy: [0.5583, 0.0895], drift_phase_time: 81.25}
+  - {block_xy: [0.4746, 0.0146], block_yaw: 0.434, ee_xy: [0.5902, 0.0477], drift_phase_time: 87.5}
+  - {block_xy: [0.4653, -0.1187], block_yaw: 0.3145, ee_xy: [0.5812, -0.1943], drift_phase_time: 93.75}

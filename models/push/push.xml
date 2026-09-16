@@ -1,0 +1,44 @@
+<mujoco model="push">
+  <!-- Solver options live in Python (configs/numerics/push.yaml). -->
+
+  <default>
+    <velocity ctrllimited="true" ctrlrange="-1.0 1.0" kv="0.1"/>
+    <default class="goal">
+      <geom conaffinity="0" contype="0" rgba="0 1 0 0.2"/>
+    </default>
+    <geom friction="1.0" solimp="0.0 0.95 0.005" solref="0.02 1"/>
+  </default>
+
+  <worldbody>
+    <!-- "goal"/"block" geoms are grafted from the chosen shape at build time;
+         joint pos is overwritten with the shape's COM. -->
+    <body name="goal" mocap="true" pos="0.0 0.0 0.0">
+    </body>
+
+    <body name="block" pos="0.0 0.0 0.0">
+      <joint name="block_x" type="slide" pos="0 0 0" axis="1 0 0" />
+      <joint name="block_y" type="slide" pos="0 0 0" axis="0 1 0" />
+      <joint name="block_yaw" type="hinge" pos="0 0 0" axis="0 0 1"/>
+    </body>
+
+    <body name="pusher" pos="0 .1 .011">
+      <joint name="root_x" type="slide" pos="0 0 0" axis="1 0 0" />
+      <joint name="root_y" type="slide" pos="0 0 0" axis="0 1 0" />
+      <geom name="pusher" type="sphere" size=".01" rgba="1 0 0 1" />
+      <site name="pusher" pos="0 0 0" rgba="0 0 0 0"/>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <velocity name="x_motor" joint="root_x" />
+    <velocity name="y_motor" joint="root_y" />
+  </actuator>
+
+  <!-- xbody (kinematic frame), not body (inertial frame): avoids
+       misalignment for shapes whose principal axes aren't geom-aligned. -->
+  <sensor>
+    <framepos name="position" objtype="xbody" objname="block" reftype="xbody" refname="goal"/>
+    <framequat name="orientation" objtype="xbody" objname="block" reftype="xbody" refname="goal"/>
+    <framepos name="pusher_to_block" objtype="body" objname="pusher" reftype="body" refname="block"/>
+  </sensor>
+</mujoco>

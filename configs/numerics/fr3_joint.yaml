@@ -1,0 +1,22 @@
+# Solver/integrator options for Push-FR3 with a 3-DOF constrained block.
+#
+# Differs from fr3_free.yaml in four fields (this vs that): timestep 0.02/0.01,
+# iterations 5/10, ls_iterations 8/16, eulerdamp false/true. All but eulerdamp
+# mean fr3_free does more solver work per simulated second, itself a divergence
+# driver -- so a joint-vs-free comparison across these two profiles is
+# CONFOUNDED. Pin ONE for both variants before attributing anything to the
+# block's DOF.
+timestep: 0.02
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 5
+ls_iterations: 8
+eulerdamp: false
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

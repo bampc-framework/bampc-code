@@ -1,0 +1,126 @@
+<!-- Curling-FR3: a free 6-DOF puck shot down a low-friction lane. -->
+<mujoco model="fr3 curling scene">
+
+  <!-- Solver options live in Python (configs/numerics/curling.yaml). -->
+
+  <default>
+
+    <geom contype="7" conaffinity="7" />
+
+    <!-- ELEMENTWISE MAX applies to a contacting pair, so this and `wood`'s
+         friction must change together. -->
+    <default class="stone">
+      <geom friction="0.08 0.002 0.0001"
+        solref="0.03 1.0"
+        solimp="0.9 0.95 0.001 0.5 2"
+        condim="3"
+        contype="2"
+        conaffinity="5" />
+    </default>
+
+    <!-- Visual-only: the house (goal region) and the launch region. -->
+    <default class="marker">
+      <geom conaffinity="0" contype="0" mass="0" group="1" />
+    </default>
+
+    <default class="wood">
+      <geom friction="0.08"
+        solref="0.03 1.0"
+        solimp="0.9 0.95 0.001 0.5 2"
+        rgba="0.75 0.78 0.82 1.0"
+        condim="3" contype="4" conaffinity="3" />
+    </default>
+
+  </default>
+
+  <worldbody>
+    <camera name="main" pos="0.90 -1.35 1.05" mode="targetbody" target="ground" />
+    <camera name="top_view" pos="0.90 0.0 1.70" xyaxes="1 0 0 0 1 0" />
+    <camera name="camera" pos="2.05 -0.95 0.75" mode="targetbody" target="ground" />
+
+    <body name="ground" pos="0.90 0.0 -0.0015" quat="1 0 0 0">
+      <geom class="wood" name="ground" type="plane"
+        pos="0 0 0.0075" size="0.83 0.185 0.01" />
+
+      <geom class="marker" name="lane_slab" type="box"
+        pos="0 0 0" size="0.83 0.185 0.0075"
+        rgba="0.75 0.78 0.82 1.0" />
+
+      <!-- Visual only: a velocity barrier in the IK confines the EE, not this
+           geom. Same box as CurlingFr3's `launch_box` kwarg, synced by hand:
+           this pos is LOCAL to the lane and tracks it, the kwarg does not. -->
+      <geom class="marker" name="launch_region" type="box"
+        pos="-0.325 0.0 0.0080" size="0.125 0.15 0.0005"
+        rgba="0.20 0.42 0.90 0.30" />
+    </body>
+
+    <!-- _build_model lifts this to the puck's resting height. -->
+    <body name="goal" mocap="true" pos="1.00 0.0 0.0" quat="1 0 0 0">
+      <geom class="marker" name="house" type="cylinder" size="0.08 0.0005 0"
+        rgba="0.85 0.25 0.25 0.30" />
+      <geom class="marker" name="button" type="cylinder" size="0.025 0.0006 0"
+        rgba="0.95 0.95 0.98 0.55" />
+    </body>
+
+    <!-- "block" geoms are grafted from the chosen shape at build time. -->
+    <body name="block" pos="0.61 0.0 0.0" quat="1 0 0 0">
+      <joint name="block" type="free" pos="0 0 0" />
+    </body>
+  </worldbody>
+
+  <include file="../fr3/fr3_arm.xml" />
+
+  <!-- MUST come after the include: overrides the arm's meshdir. -->
+  <compiler angle="radian" meshdir="../fr3/assets" />
+
+  <sensor>
+    <framepos name="position" objtype="xbody" objname="block" reftype="xbody" refname="goal" />
+    <framequat name="orientation" objtype="xbody" objname="block" reftype="xbody" refname="goal" />
+
+    <framepos name="position_world" objtype="xbody" objname="block" />
+    <framepos name="goal_position_world" objtype="xbody" objname="goal" />
+
+    <framequat name="orientation_world" objtype="xbody" objname="block" />
+    <framequat name="goal_orientation_world" objtype="xbody" objname="goal" />
+
+    <framelinvel name="block_linvel" objtype="xbody" objname="block" />
+
+    <framepos name="safety" objtype="xbody" objname="ee_frame" reftype="xbody" refname="goal" />
+    <framepos name="ee_t1" objtype="xbody" objname="ee_frame" reftype="site" refname="attractor_site1" />
+    <framepos name="ee_t2" objtype="xbody" objname="ee_frame" reftype="site" refname="attractor_site2" />
+    <framepos name="ee_t3" objtype="xbody" objname="ee_frame" reftype="site" refname="attractor_site3" />
+
+    <framezaxis name="ee_zaxis" objtype="xbody" objname="ee_frame" />
+    <framepos name="ee_position_world" objtype="xbody" objname="ee_frame" />
+
+    <framelinvel name="ee_linvel" objtype="xbody" objname="ee_frame" />
+    <frameangvel name="ee_angvel" objtype="xbody" objname="ee_frame" />
+  </sensor>
+
+  <keyframe>
+    <!-- Arm angles put the EE inside the launch box; re-solve with
+         CurlingFr3._solve_ik if the lane moves. -->
+    <key name="home"
+      qpos="0.61 0 0.0 1 0 0 0 4.38884438e-01 4.78980196e-01 -3.91280857e-01 -2.28833937e+00 4.24864783e-01 2.70107483e+00 -1.87131885e+00"
+      ctrl="0 0 0 0 0 0 0" />
+  </keyframe>
+
+  <statistic center="0.85 0 0.0" extent="1.4" />
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512"
+      height="3072" />
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4"
+      rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300" />
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5"
+      reflectance="0.2" />
+  </asset>
+
+  <worldbody>
+    <light pos="0.6 0 1.5" dir="0 0 -1" directional="true" />
+    <geom name="floor" type="plane" size="0 0 0.0001"
+      material="groundplane"
+      contype="0" conaffinity="0" />
+  </worldbody>
+</mujoco>

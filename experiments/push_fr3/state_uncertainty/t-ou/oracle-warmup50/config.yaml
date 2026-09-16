@@ -1,0 +1,70 @@
+name: fr3-free-perf-t-ou-oracle-warmup50
+
+task: push_fr3
+
+# Shared oracle baseline for the warmup50 grid extension. `oracle` has no
+# sensor at all (build_arm returns it with sensor=belief=filt=None), so it
+# never reads sensor.scale/tau, kalman.warmup_steps, or belief.* -- meaning
+# its result is identical across every warmup50 cell that shares this same
+# planner/scenario/task_params/num_seeds/repeats (they all do). Run ONCE
+# here rather than duplicated per cell; each consuming cell's own
+# `results/ps/oracle` is a symlink back to this directory's
+# `results/ps/oracle`, not a separate run.
+
+scenario_bank: push_fr3_t
+
+planner:
+  profile: push_fr3
+  overrides:
+    algo: ps
+    settle_steps: 2
+    sample_budget: 13500
+
+prediction:
+  numerics: fr3_free
+truth:
+  backend: warp
+  numerics: fr3_free
+
+num_seeds: 8
+repeats: 3
+
+rollout_time: 20.0
+plan_freq_hz: 10
+
+algos: [ps, cem]
+
+arms:
+  - oracle
+
+sensor:
+  preset: pose-ou
+  scale: 1.2
+  tau: 1.0
+  observe_velocity: false
+  twist_estimator: finite_difference
+  bias_directions: 4
+  bias_wander_period: 0.0
+
+belief:
+  num_domains: 29
+  sigma_scale: 1.0
+  double_sigma_scale: 2.0
+  triple_sigma_scale: 3.0
+  fixed_noise: pose-ou-fixed
+  fixed_sigma_scale: 1.2
+  fixed_double_sigma_scale: 2.4
+  fixed_triple_sigma_scale: 3.6
+  fixed_twist_sigma_scale: 1.2
+  estimator: ensemble
+
+kalman:
+  accel_std: 0.2
+  ang_accel_std: 1.0
+  warmup_steps: 50
+
+task_params:
+  sampling_space: task
+  manipulation_type: free
+  reward_profile: push_fr3
+  w_align: 0.9

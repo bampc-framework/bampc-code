@@ -1,0 +1,44 @@
+# Frozen start states for Curling-FR3 with the "circle" puck, EXPERIMENTAL
+# 90 deg-about-z lane rotation variant of ``curling_circle.yaml``.
+#
+# Not independently sampled: every (block_xy, ee_xy) pair and goal_xy here is
+# that file's own row rotated 90 deg CCW about the world origin
+# ((x, y) -> (-y, x)), block_yaw shifted by +pi/2 (wrapped to [-pi, pi]) --
+# so index i here is the SAME frozen scenario as index i there, just rotated
+# to match a lane built with CurlingFr3(lane_yaw=pi/2, downrange_axis=1,
+# launch_box=(-0.15, 0.15, 0.45, 0.70), goal_xy=goal_xy) (see
+# examples/simple/curling.py's ``--rotate90`` flag). If ``curling_circle.yaml``
+# is ever regenerated, re-derive this file the same way rather than hand-
+# editing it -- do not sample a fresh, independent bank for this variant, or
+# the two banks stop being comparable shot-for-shot.
+#
+# Everything else (task/shape/scale/goal_drift, launch-box-membership
+# invariant on ee_xy) is identical to curling_circle.yaml -- see that file
+# for the full rationale.
+
+task: curling
+shape: circle
+scale: 1.0
+goal_xy: [0.0, 1.0]
+goal_drift:
+  radius_xy: [0.0, 0.0]
+  freq_xy: [0.0, 0.0]
+  yaw_amp: 0.0
+  yaw_freq: 0.0
+scenarios:
+  - {block_xy: [-0.0750, 0.6030], block_yaw: 1.0909, ee_xy: [-0.0836, 0.5252], drift_phase_time: 0.0}
+  - {block_xy: [-0.0507, 0.5797], block_yaw: 2.1055, ee_xy: [-0.0763, 0.5089], drift_phase_time: 0.0}
+  - {block_xy: [0.0149, 0.5889], block_yaw: 1.2455, ee_xy: [0.0156, 0.5094], drift_phase_time: 0.0}
+  - {block_xy: [0.0533, 0.5755], block_yaw: 1.3842, ee_xy: [0.0571, 0.4872], drift_phase_time: 0.0}
+  - {block_xy: [-0.0620, 0.5949], block_yaw: 1.4623, ee_xy: [-0.0946, 0.5247], drift_phase_time: 0.0}
+  - {block_xy: [0.0276, 0.5710], block_yaw: 2.0810, ee_xy: [0.0208, 0.4953], drift_phase_time: 0.0}
+  - {block_xy: [0.0072, 0.5518], block_yaw: 1.8020, ee_xy: [0.0213, 0.4659], drift_phase_time: 0.0}
+  - {block_xy: [0.0333, 0.6068], block_yaw: 1.2860, ee_xy: [0.0310, 0.5356], drift_phase_time: 0.0}
+  - {block_xy: [-0.0420, 0.5651], block_yaw: 1.7467, ee_xy: [-0.0643, 0.4940], drift_phase_time: 0.0}
+  - {block_xy: [-0.0134, 0.5826], block_yaw: 1.4971, ee_xy: [-0.0156, 0.4997], drift_phase_time: 0.0}
+  - {block_xy: [0.0431, 0.5855], block_yaw: 1.8749, ee_xy: [0.0535, 0.5130], drift_phase_time: 0.0}
+  - {block_xy: [-0.0231, 0.5597], block_yaw: 1.9696, ee_xy: [-0.0052, 0.4773], drift_phase_time: 0.0}
+  - {block_xy: [0.0716, 0.5613], block_yaw: 1.0058, ee_xy: [0.1027, 0.4772], drift_phase_time: 0.0}
+  - {block_xy: [0.0694, 0.5995], block_yaw: 1.6907, ee_xy: [0.0801, 0.5173], drift_phase_time: 0.0}
+  - {block_xy: [-0.0019, 0.5980], block_yaw: 1.5778, ee_xy: [0.0099, 0.5180], drift_phase_time: 0.0}
+  - {block_xy: [-0.0349, 0.5565], block_yaw: 1.1848, ee_xy: [-0.0217, 0.4718], drift_phase_time: 0.0}

@@ -1,0 +1,23 @@
+# Planner tuning for peg_fr3. See configs/planner/push_fr3.yaml for the "every
+# field present, algo-agnostic" rationale. The short horizon is the task:
+# insertion is a slow, precise descent.
+risk: average
+num_samples: 400
+plan_horizon: 0.2
+num_knots: 4
+spline_type: cubic
+elite_frac: 0.08
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 0.01
+risk_alpha: 0.1
+risk_gamma: 1.0
+settle_steps: 0
+# At their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+best_sample_execution: false
+ctrl_range_scale: 1.0
+by_sampling:
+  task: {noise_level: 0.25, init_std: 0.25}
+  joint: {noise_level: 0.1, init_std: 0.1}

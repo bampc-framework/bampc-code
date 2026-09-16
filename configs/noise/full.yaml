@@ -1,0 +1,9 @@
+# Every channel: systematic bias + pose Gaussian + twist Gaussian + encoder.
+#
+# "full" means full COVERAGE, not large magnitudes -- its pose sigma (4 mm) is
+# the SMALLEST of the three pose presets, so don't pick a noise level by this
+# name.
+- {kind: se3_bias,       pos: [0.005, -0.003, 0.0], rot: [0.0, 0.0, 0.035]}
+- {kind: se3_gaussian,   pos_std: 0.004, rot_std: 0.02}
+- {kind: twist_gaussian, lin_std: 0.02,  ang_std: 0.1}
+- {kind: joint_jitter,   joints: "fr3_joint*", qpos_std: 0.002, qvel_std: 0.01}

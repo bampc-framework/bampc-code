@@ -1,0 +1,52 @@
+# Planner tuning for Curling-FR3 (bampc/config/planner.py). `algo` is
+# always caller-supplied and never lives here. Every field is present even where
+# an algo ignores it, so the profile is a complete, swappable description.
+
+risk: average
+
+# Records the argmin sample's rollout as the prediction, so friction-ID has a
+# real trajectory to score. Does NOT change what is executed -- that stays the
+# algorithm's mean; overriding it measurably randomized shot strength.
+best_sample_execution: true
+
+# The field that makes this task work. Curling is open-loop after release, so a
+# horizon shorter than the slide cannot see where the puck lands and the planner
+# stalls against the launch-box wall. Must cover setup + flight + rest.
+plan_horizon: 1.9
+
+# ~2.7x push_fr3's rollout cost, so the sample count comes down to compensate.
+num_samples: 256
+
+# push_fr3's 4 knots cannot express accelerate-then-release. No need to go
+# higher: the box wall decelerates, so the spline never learns to stop.
+num_knots: 6
+
+spline_type: cubic
+
+# Establishes lane contact first. The puck rests at zero penetration, so without
+# this it free-falls on step 1 and reaches the shot moving downward -- the state
+# that destabilises the flat contact. Counted in STEPS, so it moves with dt.
+settle_steps: 3
+
+elite_frac: 0.05
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+
+# Measured, and it biases rather than blurs: MPPI's softmax-weighted mean pulls
+# the shot toward the sampling centre, launching too softly. |miss| falls
+# monotonically from T=50 to ~5, then rises as MPPI collapses onto single
+# samples. Low matters more than the exact value.
+temperature: 5.0
+
+risk_alpha: 0.1
+risk_gamma: 1.0
+
+# Deliberately not 2x-the-bound like push_fr3: there clipping is free
+# exploration, here shot magnitude is the answer and clipping would flatten it.
+noise_level: 0.6
+init_std: 0.6
+
+# At their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+ctrl_range_scale: 1.0

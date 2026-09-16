@@ -1,0 +1,31 @@
+# Solver/integrator options for Curling-FR3 (free 6-DOF puck on a low-friction
+# lane). Two fields are measured against the analytic Coulomb slide, not chosen.
+#
+# cone: the ELLIPTIC cone cannot solve the puck's flat 5-point contact at all --
+# it sinks ~16 mm, friction stops holding, and it crawls forever instead of
+# stopping (57 cm and still moving, against an exact 22.9 cm). It is the cone,
+# not the tuning: that survives every impratio, iteration count, dt and solref
+# tried. impratio 10 degrades pyramidal too, so leave it at 1.
+#
+# timestep: 0.02 halves the steps per rollout, the only lever that moves plan
+# time (227 -> 114 ms; cutting nworld 8x buys just 24%, since the cost is
+# sequential mjw.step calls, not the batch). It costs 3.5 mm of puck sink
+# against a 5 mm tolerance -- re-run scripts/curling/range_check.py after any
+# change to the lane, shape or max_lin_vel.
+#
+# Counter-intuitive, and the opposite of the retired box lane: on the plane,
+# range error GROWS with friction, so slicker ice is the SAFE end.
+timestep: 0.02
+solver: Newton
+integrator: implicitfast
+cone: pyramidal
+jacobian: dense
+impratio: 1.0
+iterations: 10
+ls_iterations: 16
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

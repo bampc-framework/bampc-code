@@ -1,0 +1,33 @@
+<mujoco model="ee_pusher">
+  <!-- Pusher end effector, authored relative to fr3_arm.xml's
+       `attachment_site`. `pusher` and `ee_frame` are named because
+       task.push_fr3 looks them up. -->
+  <worldbody>
+    <body name="pusher" pos="0 0 0" gravcomp="1">
+      <!-- Named so sweeps can target its friction: the block does contact the
+           shaft, and left unnamed this geom keeps MuJoCo's default friction,
+           which elementwise-max-clamps any block friction sweep. -->
+      <geom
+        type="box"
+        name="pusher_shaft"
+        size="0.01 0.01 0.0625"
+        pos="0 0 0.0625"
+        rgba="0.0 0.0 0.0 1"
+      />
+      <body name="ee_frame" pos="0 0 0.125" gravcomp="1">
+        <geom
+          type="sphere"
+          name="ee"
+          size="0.015"
+          pos="0 0 0"
+          rgba="0 0 0 1"
+          friction="0.01"
+          solref="0.03 1.1"
+          solimp="0.5 0.95 0.002 0.5 2"
+          condim="3"
+        />
+        <site name="ee_site" pos="0 0 0.0" size="0.015" rgba="0 0 0 1" />
+      </body>
+    </body>
+  </worldbody>
+</mujoco>

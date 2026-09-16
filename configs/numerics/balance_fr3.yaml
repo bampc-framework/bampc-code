@@ -1,0 +1,18 @@
+# Solver/integrator options for Balance-FR3 (FR3 tilts a plate to balance a free
+# block). fr3_free's family -- a free body settling on a surface -- but with more
+# solver work per step (iterations 16 vs 10) for the sustained resting contact.
+
+timestep: 0.01
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 16
+ls_iterations: 20
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

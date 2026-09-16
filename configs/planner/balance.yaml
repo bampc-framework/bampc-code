@@ -1,0 +1,21 @@
+# Planner tuning for Balance, shared by its three example regimes. No
+# by_sampling block: Balance (unlike Balance-FR3) has no sampling_space.
+risk: average
+num_samples: 128
+plan_horizon: 0.4
+num_knots: 6
+spline_type: cubic
+noise_level: 0.2
+elite_frac: 0.1
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 0.01
+init_std: 0.2
+risk_alpha: 0.1
+risk_gamma: 1.0
+settle_steps: 0
+# At their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+best_sample_execution: false
+ctrl_range_scale: 1.0

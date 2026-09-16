@@ -1,0 +1,53 @@
+<mujoco model="balance">
+  <!-- Solver options live in Python (configs/numerics/balance.yaml). -->
+  <compiler angle="radian"/>
+
+  <default>
+    <position ctrllimited="true" ctrlrange="-0.5 0.5" kp="3" kv="0.3"/>
+    <default class="goal">
+      <geom conaffinity="0" contype="0" rgba="0 1 0 0.2"/>
+    </default>
+    <default class="block">
+      <!-- condim=6 activates spin/roll, so randomizing them actually bites. -->
+      <geom friction="0.5 0.001 0.01" solref="0.05 1.1"
+        solimp="0.8 0.85 0.002 0.5 2" condim="6"/>
+    </default>
+    <geom friction="0.5" solimp="0.0 0.95 0.005" solref="0.02 1"/>
+  </default>
+
+  <worldbody>
+    <body name="gimbal_roll" pos="0 0 0.5">
+      <joint name="tilt_roll" type="hinge" axis="1 0 0" pos="0 0 0"
+        range="-0.5 0.5" limited="true" damping="0.05"/>
+      <!-- MuJoCo requires a moving body's inertia to be nonzero, hence the
+           token mass. -->
+      <inertial pos="0 0 0" mass="0.01" diaginertia="1e-5 1e-5 1e-5"/>
+      <body name="plate">
+        <joint name="tilt_pitch" type="hinge" axis="0 1 0" pos="0 0 0"
+          range="-0.5 0.5" limited="true" damping="0.05"/>
+        <geom name="plate" friction="0.3" type="box" size="0.2 0.2 0.005"
+          rgba="0.6 0.6 0.65 1"/>
+      </body>
+    </body>
+
+    <!-- Grafted at build time. It sits under the world because mocap bodies
+         must be direct children of it; the host writes mocap_pos/quat each
+         frame so the goal tracks the plate's tilt. -->
+    <body name="goal" mocap="true" pos="0.0 0.0 0.5">
+    </body>
+
+    <!-- "block" geoms are grafted at build time. -->
+    <body name="block" pos="0.0 0.0 0.0">
+      <joint name="block" type="free"/>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <position name="roll_motor" joint="tilt_roll"/>
+    <position name="pitch_motor" joint="tilt_pitch"/>
+  </actuator>
+
+  <sensor>
+    <framepos name="position" objtype="body" objname="block" reftype="body" refname="goal"/>
+  </sensor>
+</mujoco>

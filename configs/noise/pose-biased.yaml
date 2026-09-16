@@ -1,0 +1,5 @@
+# Same spread as `pose`, plus a systematic calibration error. The bias is
+# first: it shifts the mean that the Gaussian below then spreads around.
+- {kind: se3_bias,       pos: [0.01, -0.01, 0.0], rot: [0.0, 0.0, 0.045]}
+- {kind: se3_gaussian,   pos_std: 0.01, rot_std: 0.06}
+- {kind: twist_gaussian, lin_std: 0.02, ang_std: 0.1}

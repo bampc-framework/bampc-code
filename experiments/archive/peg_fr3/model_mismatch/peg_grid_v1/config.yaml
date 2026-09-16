@@ -1,0 +1,60 @@
+name: peg-grid-v2
+task: peg_fr3
+
+# clearance x true_offset x {point, oracle, hedge}. point/oracle run once per
+# (clearance, true_offset) cell at R=1, S=budget (the "full sampling budget"
+# reference -- oracle's spec depends on true_offset, point's doesn't, but the
+# TRUTH each is tested against does). hedge additionally fans noise_ratio_grid
+# (mount_noise = ratio * that cell's true_offset, so the ensemble's width
+# stays calibrated to the real error rather than an arbitrary absolute value)
+# x hedge_domains_grid (R fixed per value; S is held at the planner profile's
+# own num_samples via hedge_fixed_samples -- growing R buys domain coverage
+# WITHOUT shrinking control samples, unlike every other fanned arm's
+# fixed-nworld budget split). See peg_grid_variants in harness.py.
+#
+# No risk_grid here: simplified to Average risk (the planner profile's default) everywhere, so the grid stays
+# clearance x true_offset x ratio x domains without a further 4x blowup.
+
+scenario_bank: peg_fr3          # clearance isn't bank-owned (see harness.py)
+
+planner:
+  profile: peg_fr3
+  overrides: {algo: cem, sample_budget: 19200}
+
+prediction:
+  numerics: peg_fr3
+truth:
+  backend: warp
+  numerics: peg_fr3
+
+num_seeds: 8
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 20
+
+# point/oracle, R=1, S=budget: capped at the SAME nworld ceiling as hedge's
+# largest arm (R=48 x S=400 = 19200), not the R=1 real-time cap -- every
+# arm's peak compute is now identical and comfortably below real-time
+# (measured 42.4ms + 2*0.72ms std ~= 43.9ms vs the 50ms/20Hz budget).
+num_domains: 12  # unused placeholder for schema
+
+clearance_grid: [0.0005, 0.001, 0.0015, 0.002, 0.0025, 0.003, 0.0035, 0.004]
+true_offset_grid: [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007]
+noise_ratio_grid: [0.5, 1.0, 2.0, 3.0]
+# All below real-time at num_samples=400 (planner/peg_fr3's own num_samples):
+# R=12 -> 9.2ms, R=24 -> 13.4ms, R=48 -> 19.7ms/replan, all well under the
+# 50ms/20Hz budget -- capped at 48 (nworld=19200) to match point/oracle's
+# budget above, not pushed to the real-time ceiling.
+hedge_domains_grid: [12, 24, 48]
+
+algos: [cem]
+
+arms:
+  - point
+  - oracle
+  - hedge
+
+task_params:
+  sampling_space: task
+  reward_profile: peg_fr3

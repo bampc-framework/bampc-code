@@ -1,0 +1,75 @@
+name: dr-mismatch-balance-friction-truth-10hz-v1
+task: balance_fr3
+
+# Friction-mismatch-per-truth-level grid, balance_fr3's twin of push_fr3's
+# friction_truth_10hz_v1. harness.py's _body_val mirrors the truth value
+# onto the plate geom too, so the truth-grid cell's effective contact
+# friction is the pinned value rather than being clamped by the plate's own
+# fixed nominal (MuJoCo combines a contacting pair's friction via
+# elementwise max).
+#
+# The question: how sensitive are the friction_<mult> arms across the
+# 0.02x-50x range, and does that hold at several plausible real friction
+# levels -- same format as the mass_truth_10hz_v1 /
+# rolling_friction_truth_10hz_v1 siblings.
+#
+# true_bias_grid multipliers (2.5x/10.0x) of the nominal BALL sliding
+# friction 0.06 (from the compiled balance_fr3 task, ball's own base --
+# not the plate's, matching push_fr3's block-anchored convention): 0.15
+# (low, e.g. a polished ball on a polished plate) / 0.6 (high, e.g. a
+# rubberized pair) -- both ends of a plausible mu range for a ball/plate
+# pair, the same physical envelope push_fr3's friction grid uses. The
+# middle cell (5.0x = 0.3, the CURRENT nominal plate friction) is
+# deliberately dropped, matching mass_truth_10hz_v1's convention -- see
+# that config's header.
+#
+# 10 Hz leg -- uses the balance_fr3 numerics profile (dt=0.01) and this
+# rate's own budget, shared with mass_truth_10hz_v1 /
+# rolling_friction_truth_10hz_v1. See mass_truth_10hz_v1's header for how
+# a rate's budget is bisected.
+#
+# num_seeds=4/repeats=4 (not the usual 8/4), matching this family's
+# overnight-batch budget -- see mass_truth_10hz_v1's header.
+
+scenario_bank: balance_fr3
+bias_params: [friction]
+
+planner:
+  profile: balance_fr3
+  overrides: {algo: mppi, sample_budget: 9000}  # this rate's real-time budget
+
+prediction:
+  numerics: balance_fr3
+truth:
+  backend: warp
+  numerics: balance_fr3
+
+bias_target: truth_grid
+true_bias_grid: [2.5, 10.0]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 10
+
+num_domains: 10  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [mppi]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - friction_0.02
+  - friction_0.1
+  - friction_0.25
+  - friction_0.5
+  - friction_2.0
+  - friction_4.0
+  - friction_10.0
+  - friction_50.0
+
+task_params:
+  sampling_space: joint
+  reward_profile: balance_fr3

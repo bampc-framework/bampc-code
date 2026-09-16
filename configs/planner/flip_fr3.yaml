@@ -1,0 +1,28 @@
+# Planner tuning for Flip-FR3 (bampc/config/planner.py).
+risk: average
+num_samples: 1024
+plan_horizon: 0.8
+num_knots: 4
+spline_type: cubic
+elite_frac: 0.025
+# A fixed count of 12 didn't help success rate -- flat-plateau reward, not a
+# selection-width problem. Revisit after reward shaping.
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 8.0
+init_std: 0.05
+risk_alpha: 0.1
+risk_gamma: 1.0
+settle_steps: 2
+# Both below are at their defaults; see configs/planner/push_fr3.yaml.
+sample_budget: null
+best_sample_execution: false
+# Fraction of the raw actuator ctrlrange used as the sampling bound -- the only
+# ceiling on arm speed, joint-space sampling having no IK bound in between.
+# Tightened because an unconstrained wrist command saturates the joint's real
+# +-12 Nm torque budget under contact. A no-op under sampling_space="task".
+ctrl_range_scale: 0.2
+by_sampling:
+  task: {noise_level: 0.3, init_std: 0.3}
+  joint: {noise_level: 0.25, init_std: 0.05}

@@ -1,0 +1,50 @@
+name: curling-friction-id-v1
+
+# Compares three ways of handling an unknown, randomly-changing lane
+# friction across a 20-shot campaign: a fixed-but-wrong guess
+# (wrong_estimate), a static wide hedge that never narrows (wide_hedge), and
+# the belief-collapse identification loop (adaptive,
+# scripts/curling/friction_id.py). Friction is mirrored onto both the puck
+# (body.block) and the lane (geom.ground) everywhere -- MuJoCo combines a
+# contacting pair's friction via elementwise max, so writing it to only one
+# side is a silent no-op (see experiments/friction_id/harness.py's module
+# docstring and scripts/curling/hedge.py::make_spec_fn).
+#
+# 20 attempts, ONE flip at attempt 10 (flip_every=10 -> two 10-attempt
+# segments): a single flip gives confirmations=2 room to lock in within a
+# segment and then be exploited, rather than only being reached at the
+# buzzer. The same truth_schedule draw is reused across every arm and algo
+# for a given seed, so the comparison is fair.
+#
+# mu_lo raised to 0.09, off scripts/curling/hedge.py's MU_LO=0.03: the
+# bottom of hedge.py's band is a zone where the converged residual and the
+# mismatch residual overlap, so no fixed value separates them. Keeping the
+# truth above it isolates this comparison from that separate soft spot.
+
+scenario_bank: curling_circle
+scenario: 0
+planner: curling
+
+algos: [mppi, ps, cem]
+arms: [wrong_estimate, wide_hedge, adaptive]
+
+attempts: 20
+flip_every: 10
+num_seeds: 8
+
+sample_budget: 4096  # nworld per replan for every arm: S = budget // R
+domains: 8
+mu_lo: 0.09   # raised off hedge.py's MU_LO -- see comment above
+mu_hi: 0.2    # scripts/curling/hedge.py's MU_HI
+wrong_mu: 0.08  # models/curling/scene.xml's own hardcoded nominal --
+                # deliberately just below the search band
+
+# Belief thresholds copied verbatim from friction_id.py's CLI defaults --
+# see that file's argparse help strings for the reasoning behind each.
+attempt_seconds: 4.0
+release_speed: 0.05
+temperature: 1.0e-3
+collapse_at: 0.02
+widen_at: 0.01
+confirmations: 2
+reject_ratio: 4.0

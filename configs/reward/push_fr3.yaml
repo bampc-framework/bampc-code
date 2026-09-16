@@ -1,0 +1,54 @@
+# Shared reward weights for push_fr3, across examples and every sweep
+# (bampc/config/reward.py). PushFr3 has two orthogonal axes --
+# sampling_space (task/joint) x manipulation_type (free/joint) -- so this
+# profile nests by_manipulation inside each by_sampling branch.
+#
+# w_pos/w_orient: universal across every observed tuning -- the core
+# tracked objective doesn't vary by sampling/manipulation choice.
+w_pos: 50.0
+w_orient: 5.0
+by_sampling:
+  task:
+    by_manipulation:
+      free:
+        max_lin_vel: 0.25
+        w_attract: 0.05
+        w_align: 1.5
+        w_safety: 0.0
+        safety_thresh: 0.0
+        w_ee_orient: 0.0
+        w_ee_height: 0.0
+        w_arm_home: 0.0
+        terminal_scale: 5.0
+      joint:
+        max_lin_vel: 0.25
+        w_attract: 0.2
+        w_align: 0.3
+        w_safety: 1.0
+        safety_thresh: 0.5
+        w_ee_orient: 0.0
+        w_ee_height: 0.0
+        w_arm_home: 0.0
+        terminal_scale: 1.0
+  joint:
+    by_manipulation:
+      free: 
+        max_lin_vel: 0.25
+        w_attract: 0.01
+        w_align: 0.0
+        w_safety: 1.0
+        safety_thresh: 0.5
+        w_ee_orient: 5.0
+        w_ee_height: 50.0
+        w_arm_home: 1.0
+        terminal_scale: 10.0
+      joint: 
+        max_lin_vel: 0.25
+        w_attract: 0.2
+        w_align: 0.3
+        w_safety: 1.0
+        safety_thresh: 0.5
+        w_ee_orient: 0.0
+        w_ee_height: 0.0
+        w_arm_home: 0.0
+        terminal_scale: 1.0

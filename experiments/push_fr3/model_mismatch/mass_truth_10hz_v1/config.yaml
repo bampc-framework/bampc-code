@@ -1,0 +1,89 @@
+name: dr-mismatch-push-mass-truth-10hz-v1
+task: push_fr3
+
+# Mass-mismatch-per-truth-level grid, 10 Hz leg. See
+# experiments/model_mismatch/README.md's "Which role gets the offset"
+# section and harness.py's truth_grid_spec for the bias_target: truth_grid
+# mechanism.
+#
+# The question: does the mass_<mult> arms' sensitivity ranking look the
+# same regardless of which real block (of a plausible weight range) is
+# actually on the table, not just at one assumed nominal (0.21 kg, the
+# current printed block).
+#
+# true_bias_grid multipliers (0.5x/2.0x) of the nominal block mass 0.21 kg
+# (from the compiled push_fr3/free task, not a hand-typed model constant):
+# 0.105 kg (light, e.g. a hollow/foam print) / 0.42 kg (heavy, e.g. a
+# filled/metal-weighted print) -- both ends of a plausible weight range for
+# a hand-sized pushable block. The middle/current-nominal cell (1.0x) is
+# deliberately dropped: it would reproduce a plain mass_<mult> sweep at the
+# SAME truth.
+#
+# num_seeds=4/repeats=4 (not the usual 8/4): this grid x 2 params x 3 rates
+# x 2 tasks is a big overnight batch, and halving num_seeds keeps 16
+# episodes/arm (still far more than quick mode's 1) at half the wall-clock.
+#
+# Budget: per rate, each leg spending what it can plan with inside its own
+# replan period. Bisect a candidate against the experiments/scaling
+# benchmark, which times this very config (its run.py's PRACTICE_CONFIGS
+# maps push_fr3 here): reps after a warmup, mean_ms + 2*std_ms <=
+# period_ms, no dt_lag (this axis's episodes don't forward-predict, unlike
+# state_uncertainty's). Re-time AT the value you intend to use rather than
+# scaling down from a cap -- near the cap the 2-sigma bar is decided by the
+# std, which is not stable across passes. A bisected number is a timing of
+# ONE machine state, not a property of the shape; put the GPU in
+# persistence mode (`sudo nvidia-smi -pm 1`) before bisecting, or it idles
+# to P8 between subprocess launches and repeated runs disagree.
+#
+# Per rate rather than one shared number, on purpose: a slower replan rate
+# really does buy more samples per plan on the same GPU, so each leg runs
+# what that rate would actually deploy. It does mean a cross-rate figure
+# (plot_truth_grid_summary.py) varies rate AND sample count together --
+# that is the intended comparison, not a confound to correct for.
+#
+# Only bias_target, true_bias_grid, bias_params (mass only), num_seeds and
+# the budget differ from the other legs of this family.
+
+scenario_bank: push_fr3_t
+
+planner:
+  profile: push_fr3
+  overrides: {algo: ps, sample_budget: 13500}
+
+prediction:
+  numerics: fr3_free
+truth:
+  backend: warp
+  numerics: fr3_free
+
+bias_target: truth_grid
+bias_params: [mass]
+true_bias_grid: [0.5, 2.0]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 10
+
+num_domains: 12  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [ps]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - mass_0.02
+  - mass_0.1
+  - mass_0.25
+  - mass_0.5
+  - mass_2.0
+  - mass_4.0
+  - mass_10.0
+  - mass_50.0
+
+task_params:
+  sampling_space: task
+  manipulation_type: free
+  reward_profile: push_fr3

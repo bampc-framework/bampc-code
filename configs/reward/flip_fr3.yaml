@@ -1,0 +1,34 @@
+# Reward weights for Flip-FR3 (bampc/config/reward.py). Mostly UNTUNED
+# starting points, not measured values -- gate-check before trusting them.
+# ctrl_range_scale lives in configs/planner/flip_fr3.yaml: it bounds sampling,
+# not reward.
+
+# Getting the box vertical. w_orient tracks the goal pose; w_upright is a
+# yaw-independent "get vertical" gradient; the tolerances set what counts as
+# there. See FlipFr3.__init__.
+w_orient: 20.0
+w_upright: 20.0
+orient_tol: 0.3
+upright_tol: 0.35
+
+w_attract: 0.8
+w_ctrl: 3
+
+# EE point-down penalty -- anchors the pusher's own orientation instead of
+# matching joint posture (w_arm_home), to keep the redundant arm sane.
+w_ee_orient: 2.0
+w_arm_home: 0.0
+
+# Peak hinge penalty on contact force above force_safe (N), charged once per
+# rollout on the peak excess -- integrating it punished sustained-but-necessary
+# contact instead of spikes. Off until force_safe is calibrated from real
+# force data; do not enable it with a guessed threshold.
+w_force: 0.0
+force_safe: 10.0
+
+terminal_scale: 5.0
+
+# Only meaningful under sampling_space="task"; the default "joint" branch
+# bounds itself via the planner's ctrl_range_scale.
+max_lin_vel: 0.2
+max_ang_vel: 0.3

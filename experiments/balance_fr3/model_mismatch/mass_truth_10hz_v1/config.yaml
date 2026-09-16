@@ -1,0 +1,91 @@
+name: dr-mismatch-balance-mass-truth-10hz-v1
+task: balance_fr3
+
+# Mass-mismatch-per-truth-level grid, balance_fr3's twin of push_fr3's
+# mass_truth_10hz_v1 (read that config's header first -- same bias_target:
+# truth_grid mechanism, see experiments/model_mismatch/README.md's "Which
+# role gets the offset" section and harness.py's truth_grid_spec).
+#
+# The question: does the mass_<mult> arms' sensitivity look the same
+# regardless of which real ball (of a plausible weight range, same size
+# class) is actually on the plate, not just at one assumed nominal
+# (0.1 kg).
+#
+# true_bias_grid multipliers (0.3x/3.0x) of the nominal ball mass 0.1 kg
+# (from the compiled balance_fr3 task): 0.03 kg (light, e.g. hollow/
+# plastic) / 0.3 kg (heavy, e.g. solid dense ball) -- both ends of a
+# plausible weight range for a hand-sized ball on a tilting plate. The
+# middle/current-nominal cell (1.0x) is deliberately dropped: it would
+# reproduce a plain mass_<mult> sweep at the SAME truth.
+#
+# 10 Hz leg -- uses the balance_fr3 numerics profile (dt=0.01, hits 10 Hz
+# exactly) and this rate's own real-time budget. Bisect a candidate against
+# the experiments/scaling benchmark's methodology (its own task build, reps
+# after a warmup, mean_ms + 2*std_ms <= period_ms, no dt_lag -- this axis's
+# episodes don't forward-predict, unlike state_uncertainty's), and re-time
+# AT the value you intend to use rather than scaling down from a cap.
+#
+# Leave real head room under the cap: this task's per-call std is several
+# times push_fr3's, and at 20 Hz a 2-sigma term of a few ms is a large
+# fraction of the whole period -- jitter, not sample count, is what binds
+# here, so buying margin by cutting S has steep diminishing returns. A
+# rate's budget is set by the SLOWEST arm at that rate and shared across
+# the parameters, so the three truth families stay comparable; re-check the
+# slowest arm, not just mass_truth, after any DR-spec change.
+#
+# A bisected budget is a timing of ONE machine state, not a property of the
+# shape. Bisect in-process, or put the GPU in persistence mode
+# (`sudo nvidia-smi -pm 1`) first -- otherwise it idles to P8 between
+# per-candidate subprocess launches and repeated runs of the same rate
+# disagree. A budget calibrated against a different numerics profile does
+# not carry over either.
+#
+# num_seeds=4/repeats=4 (not the usual 8/4): this grid x 2 params x 3 rates
+# x 2 tasks is a big overnight batch, and halving num_seeds keeps 16
+# episodes/arm (still far more than quick mode's 1) at half the wall-clock.
+#
+# Only bias_target, true_bias_grid, bias_params (mass only), sample_budget
+# and num_seeds differ from the other legs of this family.
+
+scenario_bank: balance_fr3
+bias_params: [mass]
+
+planner:
+  profile: balance_fr3
+  overrides: {algo: mppi, sample_budget: 9000}  # this rate's real-time budget
+
+prediction:
+  numerics: balance_fr3
+truth:
+  backend: warp
+  numerics: balance_fr3
+
+bias_target: truth_grid
+true_bias_grid: [0.3, 3.0]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 10
+
+num_domains: 10  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [mppi]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - mass_0.02
+  - mass_0.1
+  - mass_0.25
+  - mass_0.5
+  - mass_2.0
+  - mass_4.0
+  - mass_10.0
+  - mass_50.0
+
+task_params:
+  sampling_space: joint
+  reward_profile: balance_fr3

@@ -1,0 +1,12 @@
+# Stateless twin of pose-ou's OU term, at its own stationary magnitude
+# (pos_std=0.01, rot_std=0.10 -- the value an OU process this preset's tau
+# settles to, not a guess) and the same twist_gaussian term, with the
+# temporal correlation (se3_ou) and static bias (se3_bias) stripped out.
+#
+# Exists for ensemble_fixed_naive/_double: a belief cloud's spread preset
+# must be stateless (StateUncertainty raises on a per-episode-stateful
+# term), so this is the calibrated magnitude to hedge by without the
+# correlation structure a live filter cannot see anyway.
+
+- {kind: se3_gaussian, pos_std: 0.01, rot_std: 0.10}
+- {kind: twist_gaussian, lin_std: 0.02, ang_std: 0.1}

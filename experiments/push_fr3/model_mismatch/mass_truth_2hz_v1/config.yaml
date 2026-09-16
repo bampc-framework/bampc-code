@@ -1,0 +1,53 @@
+name: dr-mismatch-push-mass-truth-2hz-v1
+task: push_fr3
+
+# 2 Hz twin of mass_truth_10hz_v1 -- read that config's header for the
+# full motivation (does the mass_<mult> sensitivity hold regardless of
+# which real block is on the table). Same true_bias_grid, same arms; the
+# budget is this rate's own real-time capacity, since every rate in the
+# family is calibrated separately -- see mass_truth_10hz_v1's header for
+# how to bisect one. Only plan_freq_hz and sample_budget differ.
+
+scenario_bank: push_fr3_t
+
+planner:
+  profile: push_fr3
+  overrides: {algo: ps, sample_budget: 75000}
+
+prediction:
+  numerics: fr3_free
+truth:
+  backend: warp
+  numerics: fr3_free
+
+bias_target: truth_grid
+bias_params: [mass]
+true_bias_grid: [0.5, 2.0]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 2
+
+num_domains: 12  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [ps]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - mass_0.02
+  - mass_0.1
+  - mass_0.25
+  - mass_0.5
+  - mass_2.0
+  - mass_4.0
+  - mass_10.0
+  - mass_50.0
+
+task_params:
+  sampling_space: task
+  manipulation_type: free
+  reward_profile: push_fr3

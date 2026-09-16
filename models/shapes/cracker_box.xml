@@ -1,0 +1,26 @@
+<mujoco model="shape_cracker_box">
+  <!-- See t.xml. From the YCB cracker box (vikashplus/YCB_sim, Apache-2.0
+       — see meshes/NOTICE), resized anisotropically to the real test box
+       (29 x 19.5 x 7.5 cm; axis convention in flip_fr3.py's _LYING_QUAT). The
+       same factors apply to the collision box, <mesh scale>, mesh offset and
+       sites, so they stay aligned. `mass` is still the YCB value. -->
+  <asset>
+    <mesh name="cracker_box_mesh" file="meshes/003_cracker_box.msh"
+      scale="1.136364 1.218750 1.380952" />
+    <texture name="cracker_box_tex" type="2d" file="textures/003_cracker_box.png" />
+    <material name="cracker_box_mat" texture="cracker_box_tex" />
+  </asset>
+
+  <worldbody>
+    <body name="shape">
+      <geom name="collision" type="box" size="0.0375 0.0975 0.145"
+        pos="0.0 0.0 0.145" mass="0.453" rgba="1 0 0 0"/>
+      <geom name="visual" type="mesh" mesh="cracker_box_mesh"
+        material="cracker_box_mat" pos="0.015909 0.017063 0.002762"
+        contype="0" conaffinity="0" mass="0" />
+      <site name="attractor_site1" pos="0.0375 0.0 0.145" size="0.015" />
+      <site name="attractor_site2" pos="-0.0375 0.073125 0.145" size="0.015" />
+      <site name="attractor_site3" pos="-0.0375 -0.073125 0.145" size="0.015" />
+    </body>
+  </worldbody>
+</mujoco>

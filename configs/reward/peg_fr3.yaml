@@ -1,0 +1,22 @@
+# Reward weights for peg_fr3 (bampc/config/reward.py). The weights are
+# tuned; the sampling bounds and geometry sit at PegFr3's own defaults, named
+# here so a caller sees them rather than inheriting them silently. `clearance`
+# is deliberately absent -- it is a per-run choice (--clearance).
+
+# Geometry. The socket hole is peg_half + clearance, so these set the fit.
+peg_half: 0.012
+socket_xy: [0.5, 0.0]
+peg_len: 0.12
+
+# Task-space EE twist bounds.
+max_lin_vel: 0.15
+max_ang_vel: 1.0
+w_pos: 25.0
+z_scale: 1.0
+w_orient: 9.0
+w_ctrl: 0.0
+w_force: 0.0
+terminal_scale: 5.0
+by_sampling:
+  task: {w_arm_home: 0.0}    # matches peg_v1 AND peg_v2
+  joint: {w_arm_home: 1.0}   # examples-only, no sweep has used joint yet

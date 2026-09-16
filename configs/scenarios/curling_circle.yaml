@@ -1,0 +1,44 @@
+# Frozen start states for Curling-FR3 with the "circle" puck. Seed i is the same
+# pose in every experiment, so a run is reproducible from (bank, index) alone.
+#
+# Regenerate with `make_scenarios.py --task curling_circle` and paste the
+# printed `scenarios:` block below, keeping these hand-written comments.
+# Re-validate with `--check` after any model change -- a scenario that starts
+# interpenetrating silently corrupts every result that uses it.
+#
+# What varies: the puck's planar pose near the front of the launch box and the
+# EE's standoff behind it on the puck->house line. What does not: the house.
+# ScenarioBank carries one goal per task, so a range of shot distances means a
+# second bank, not a per-row goal. goal_drift is all-zero -- a house does not
+# move.
+#
+# The EE start MUST lie inside CurlingFr3's launch_box (0.40..0.65 x,
+# -0.15..0.15 y), or the barrier yanks the arm on step 1 and reads as a planner
+# failure. set_initial_state clamps and warns.
+
+task: curling
+shape: circle
+scale: 1.0
+goal_xy: [1.00, 0.0]
+goal_drift:
+  radius_xy: [0.0, 0.0]
+  freq_xy: [0.0, 0.0]
+  yaw_amp: 0.0
+  yaw_freq: 0.0
+scenarios:
+  - {block_xy: [0.603, 0.075], block_yaw: -0.4799, ee_xy: [0.5252, 0.0836], drift_phase_time: 0.0}
+  - {block_xy: [0.5797, 0.0507], block_yaw: 0.5347, ee_xy: [0.5089, 0.0763], drift_phase_time: 0.0}
+  - {block_xy: [0.5889, -0.0149], block_yaw: -0.3253, ee_xy: [0.5094, -0.0156], drift_phase_time: 0.0}
+  - {block_xy: [0.5755, -0.0533], block_yaw: -0.1866, ee_xy: [0.4872, -0.0571], drift_phase_time: 0.0}
+  - {block_xy: [0.5949, 0.062], block_yaw: -0.1085, ee_xy: [0.5247, 0.0946], drift_phase_time: 0.0}
+  - {block_xy: [0.571, -0.0276], block_yaw: 0.5102, ee_xy: [0.4953, -0.0208], drift_phase_time: 0.0}
+  - {block_xy: [0.5518, -0.0072], block_yaw: 0.2312, ee_xy: [0.4659, -0.0213], drift_phase_time: 0.0}
+  - {block_xy: [0.6068, -0.0333], block_yaw: -0.2848, ee_xy: [0.5356, -0.031], drift_phase_time: 0.0}
+  - {block_xy: [0.5651, 0.042], block_yaw: 0.1759, ee_xy: [0.494, 0.0643], drift_phase_time: 0.0}
+  - {block_xy: [0.5826, 0.0134], block_yaw: -0.0737, ee_xy: [0.4997, 0.0156], drift_phase_time: 0.0}
+  - {block_xy: [0.5855, -0.0431], block_yaw: 0.3041, ee_xy: [0.513, -0.0535], drift_phase_time: 0.0}
+  - {block_xy: [0.5597, 0.0231], block_yaw: 0.3988, ee_xy: [0.4773, 0.0052], drift_phase_time: 0.0}
+  - {block_xy: [0.5613, -0.0716], block_yaw: -0.565, ee_xy: [0.4772, -0.1027], drift_phase_time: 0.0}
+  - {block_xy: [0.5995, -0.0694], block_yaw: 0.1199, ee_xy: [0.5173, -0.0801], drift_phase_time: 0.0}
+  - {block_xy: [0.598, 0.0019], block_yaw: 0.007, ee_xy: [0.518, -0.0099], drift_phase_time: 0.0}
+  - {block_xy: [0.5565, 0.0349], block_yaw: -0.386, ee_xy: [0.4718, 0.0217], drift_phase_time: 0.0}

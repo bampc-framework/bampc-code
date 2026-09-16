@@ -1,0 +1,43 @@
+# Frozen start states for Push-FR3, T block, with a SLOW, NARROW goal drift.
+# See bampc/config/scenarios.py. The default push_fr3 bank (T shape).
+#
+# Drift radius [0.04, 0.10] keeps the goal inside the arm's reachable region
+# (|ry| ~ 0.13) for the whole cycle, so the task is tracking rather than
+# chasing an unreachable target -- a wider y-radius turns "lost the block"
+# into the goal running away instead of the arm failing.
+
+task: push_fr3
+shape: t
+scale: 1.0
+goal_xy: [0.5, 0.0]
+
+
+goal_drift:
+  radius_xy: [0.04, 0.10]
+  freq_xy: [0.01, 0.02]
+  yaw_amp: 0.5
+  yaw_freq: 0.05
+
+scenarios:
+  - {block_xy: [0.5231, 0.1086], block_yaw: 0.2851, ee_xy: [0.6663, 0.1638], drift_phase_time: 0.0}
+  - {block_xy: [0.4957, -0.0978], block_yaw: -0.513, ee_xy: [0.6015, -0.1712], drift_phase_time: 6.25}
+  - {block_xy: [0.4804, -0.0222], block_yaw: 0.1823, ee_xy: [0.6189, -0.0675], drift_phase_time: 12.5}
+  - {block_xy: [0.4547, 0.0193], block_yaw: 0.4986, ee_xy: [0.5836, 0.0483], drift_phase_time: 18.75}
+  - {block_xy: [0.5075, 0.0446], block_yaw: -0.3526, ee_xy: [0.6483, 0.0455], drift_phase_time: 25.0}
+  - {block_xy: [0.4594, -0.0529], block_yaw: -0.542, ee_xy: [0.5858, -0.0861], drift_phase_time: 31.25}
+  - {block_xy: [0.5328, 0.0914], block_yaw: -0.1755, ee_xy: [0.6642, 0.1588], drift_phase_time: 37.5}
+  - {block_xy: [0.5197, 0.0495], block_yaw: 0.1306, ee_xy: [0.6414, 0.0905], drift_phase_time: 43.75}
+  # Slots 8-11: HARD "go-around" inits -- the EE starts ON the goal (0.5, 0)
+  # with the block placed away from it, so the arm must arc around the block
+  # to reach its far side before it can push. Overwritten from the original
+  # (EE-on-away-side) inits, which were unused (runs used <= 8 seeds). Validated
+  # (t=0 interpenetration + 0.25 s settle) for both manipulation types via
+  # scratchpad/hard_inits.py. drift_phase_time preserved from the originals.
+  - {block_xy: [0.5, 0.11], block_yaw: 0.3, ee_xy: [0.5, 0.0], drift_phase_time: 50.0}
+  - {block_xy: [0.5, -0.11], block_yaw: -0.3, ee_xy: [0.5, 0.0], drift_phase_time: 56.25}
+  - {block_xy: [0.55, 0.07], block_yaw: 0.5, ee_xy: [0.5, 0.0], drift_phase_time: 62.5}
+  - {block_xy: [0.45, -0.07], block_yaw: -0.5, ee_xy: [0.5, 0.0], drift_phase_time: 68.75}
+  - {block_xy: [0.5389, -0.0638], block_yaw: 0.5814, ee_xy: [0.6957, -0.0814], drift_phase_time: 75.0}
+  - {block_xy: [0.5015, 0.0878], block_yaw: -0.1373, ee_xy: [0.6269, 0.1239], drift_phase_time: 81.25}
+  - {block_xy: [0.4746, 0.0146], block_yaw: 0.434, ee_xy: [0.6107, 0.0578], drift_phase_time: 87.5}
+  - {block_xy: [0.4653, -0.1187], block_yaw: 0.3145, ee_xy: [0.5967, -0.2028], drift_phase_time: 93.75}

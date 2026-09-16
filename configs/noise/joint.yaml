@@ -1,0 +1,3 @@
+# Encoder noise only; the object's pose is assumed perfect. FR3-specific --
+# `presets.build(joints=False)` drops it for a task with no arm.
+- {kind: joint_jitter, joints: "fr3_joint*", qpos_std: 0.002, qvel_std: 0.01}

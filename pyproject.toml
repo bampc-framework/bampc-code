@@ -1,0 +1,78 @@
+[project]
+name = "bampc"
+version = "0.1.0"
+description = "Risk-aware sampling-based MPC on MuJoCo Warp across model and state uncertainty, with sim-to-real deployment on a Franka FR3."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Anonymous Authors" }]
+keywords = [
+    "model predictive control",
+    "sampling-based MPC",
+    "MPPI",
+    "domain randomization",
+    "risk-aware control",
+    "MuJoCo",
+    "Warp",
+    "sim-to-real",
+    "robotics",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# mujoco ships wheels for cp310-cp312 only.
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    # Native MJWarp stack, floor-pinned (MJWarp is alpha, patch releases fix
+    # real bugs). Deliberately NO jax: sampling, risk and spline math are
+    # host numpy.
+    "mujoco-warp>=3.10.0",
+    "mujoco>=3.10.0",      # host model compile + mujoco.viewer
+    "warp-lang>=1.14.0",   # CUDA backend (NVIDIA driver required at runtime)
+    "numpy>=1.26",
+    "pyyaml>=6",           # configs/ profile registries
+    "imageio>=2.34",       # MP4 rollout recording
+    "imageio-ffmpeg>=0.5", # bundled ffmpeg backend for imageio's MP4 writer
+    "pillow>=10",          # GIF rollout recording
+    "matplotlib>=3.8",     # figures in experiments/ and scripts/
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.6"]
+# ROS 2 (rclpy + message packages) comes from the system ROS install, not
+# pip, so it is intentionally not declared. bampc/ros/ imports it
+# lazily.
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bampc"]
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 80
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "D", "UP", "PL"]
+# N806/N803: batch dimensions (`R`, `S`, `H`) use conventional uppercase
+# names. PLR2004: magic numbers are common in cost weights. PLR0913:
+# the engine/planner/task constructors are deliberately config-heavy with many
+# keyword-only args.
+ignore = ["N803", "N806", "PLR2004", "PLR0913", "D203", "D213"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.isort]
+known-first-party = ["bampc", "experiments"]

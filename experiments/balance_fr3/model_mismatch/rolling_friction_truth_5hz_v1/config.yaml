@@ -1,0 +1,53 @@
+name: dr-mismatch-balance-rolling-friction-truth-5hz-v1
+task: balance_fr3
+
+# 5 Hz twin of rolling_friction_truth_10hz_v1 -- read that config's
+# header for the full motivation (does the rolling_friction_<mult> sweep
+# behave the same away from the mjMINMU floor, across plausible real
+# rolling-resistance regimes). sample_budget is this rate's own budget;
+# see mass_truth_10hz_v1's header for how one is bisected. Same
+# true_bias_grid, same arms, same num_seeds; only plan_freq_hz and
+# sample_budget differ.
+
+scenario_bank: balance_fr3
+bias_params: [rolling_friction]
+
+planner:
+  profile: balance_fr3
+  overrides: {algo: mppi, sample_budget: 18500}  # this rate's real-time budget
+
+prediction:
+  numerics: balance_fr3
+truth:
+  backend: warp
+  numerics: balance_fr3
+
+bias_target: truth_grid
+true_bias_grid: [200, 1000]
+
+num_seeds: 4
+repeats: 4
+
+rollout_time: 10.0
+plan_freq_hz: 5
+
+num_domains: 10  # unused (no wide_dr arms); kept for schema, not a knob here
+
+algos: [mppi]
+
+# Relative to EACH true_bias_grid cell, not the global nominal -- see
+# truth_grid_spec. Same multiplier set as every other leg of this family.
+arms:
+  - nominal
+  - rolling_friction_0.02
+  - rolling_friction_0.1
+  - rolling_friction_0.25
+  - rolling_friction_0.5
+  - rolling_friction_2.0
+  - rolling_friction_4.0
+  - rolling_friction_10.0
+  - rolling_friction_50.0
+
+task_params:
+  sampling_space: joint
+  reward_profile: balance_fr3

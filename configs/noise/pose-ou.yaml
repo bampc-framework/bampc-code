@@ -1,0 +1,19 @@
+# Correlated (Ornstein-Uhlenbeck) pose noise with a modest, STATIC bias.
+#
+# The realistic-tracker preset: real foundation-model pose tracking on a fixed
+# camera is temporally CORRELATED (consecutive frames share error, driven by
+# viewing geometry / partial occlusion that changes slowly as the object moves),
+# not i.i.d. A Kalman point filter cannot average colored noise away, so the
+# persistent residual is exactly what a belief ensemble hedges -- the regime
+# where ensemble>point should be clearest.
+#
+# tau = 0.5 s: ~5 replans at 10 Hz, the band a point filter cannot smooth,
+# matched to how fast the block's viewing geometry changes under a slow push.
+# tau spans SE3Gaussian (tau->0, i.i.d.) and SE3Bias (tau->inf, constant), so
+# --noise-tau in the examples A/Bs the variants. The se3_bias term is the
+# quasi-static depth/calibration offset, kept MODEST so the correlated random
+# channel dominates.
+
+- {kind: se3_bias, pos: [0.004, -0.004, 0.0], rot: [0, 0, 0.03]}
+- {kind: se3_ou, pos_std: 0.01, rot_std: 0.10, tau: 0.5}
+- {kind: twist_gaussian, lin_std: 0.02, ang_std: 0.1}

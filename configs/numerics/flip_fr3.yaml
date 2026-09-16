@@ -1,0 +1,22 @@
+# Solver/integrator options for Flip-FR3 (pusher tipping a box against a wall).
+#
+# Forked from fr3_free rather than shared: that profile was tuned for sliding
+# contact, and on wall impact the GPU (float32) truth backend was seen to
+# diverge -- unbounded velocity, block through the floor -- where CPU (float64)
+# stays stable on identical actions, so the solver budget is raised
+# (iterations 12 vs 10, ls_iterations 18 vs 16).
+
+timestep: 0.01
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 12
+ls_iterations: 18
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01

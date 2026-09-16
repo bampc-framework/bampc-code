@@ -1,0 +1,37 @@
+# Frozen start states for Flip-FR3. See bampc/config/scenarios.py
+# (_pose_flip_fr3). 10 rows, hand-generated -- flip_fr3 isn't wired into
+# scripts/probing/make_scenarios.py.
+#
+# Navigation-free by design: each ee_pos is bisected down to a ~25mm
+# pusher-block surface gap, so an episode is purely the tipping problem, not
+# free-space travel. block_xy is jittered near the wall (see
+# bampc.task.flip_fr3._WALL_POS/_WALL_SIZE).
+#
+# Every row passes IK convergence, zero pusher-block penetration and a stable
+# 0.25 s settle. Two benign exceptions: the rows at block_xy y=0.25 start ~10mm
+# into the wall (soft correction, not a blow-up), and row 8 bottoms out at
+# gap=0.0 (touching, not overlapping) because its 0.4m approach vector cannot
+# clear the box within search bounds.
+#
+# Valid only for the current models/shapes/cracker_box.xml (29x19.5x7.5cm).
+# Resizing that block invalidates every ee_pos here.
+#
+# No goal_drift: the goal is a static target orientation.
+
+task: flip_fr3
+shape: cracker_box
+scale: 1.0
+
+scenarios:
+  # Row 0 is a real-robot pose, decoded from a live TF reading of the tracked
+  # box relative to fr3_link0 (residual ~2.1 deg, inside noise).
+  - {block_xy: [0.501, 0.319], block_yaw: 0.037, ee_pos: [0.501, -0.0174, 0.0338], drift_phase_time: 0.0}
+  - {block_xy: [0.55, 0.25], block_yaw: 0.0, ee_pos: [0.4968, -0.0693, 0.0374], drift_phase_time: 0.0}
+  - {block_xy: [0.55, 0.25], block_yaw: 0.0, ee_pos: [0.55, -0.0803, 0.0317], drift_phase_time: 0.0}
+  - {block_xy: [0.48, 0.22], block_yaw: 0.0, ee_pos: [0.48, -0.1106, 0.0399], drift_phase_time: 0.0}
+  - {block_xy: [0.52, 0.2], block_yaw: 0.0, ee_pos: [0.52, -0.1314, 0.0321], drift_phase_time: 0.0}
+  - {block_xy: [0.58, 0.23], block_yaw: 0.08, ee_pos: [0.557, -0.1003, 0.033], drift_phase_time: 0.0}
+  - {block_xy: [0.45, 0.22], block_yaw: -0.04, ee_pos: [0.45, -0.1119, 0.0395], drift_phase_time: 0.0}
+  - {block_xy: [0.6, 0.2], block_yaw: 0.03, ee_pos: [0.5855, -0.126, 0.037], drift_phase_time: 0.0}
+  - {block_xy: [0.5, 0.25], block_yaw: -0.01, ee_pos: [0.5, -0.0813, 0.0377], drift_phase_time: 0.0}
+  - {block_xy: [0.62, 0.22], block_yaw: 0.1, ee_pos: [0.62, -0.0961, 0.0316], drift_phase_time: 0.0}

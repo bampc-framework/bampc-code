@@ -1,0 +1,30 @@
+# Planner tuning for push_fr3 (bampc/config/planner.py). `algo` is
+# caller-supplied and never lives here. Every field is present even where an
+# algo ignores it (only cem.py reads init_std/elite_frac/num_elite/
+# adapt_covariance, only mppi.py reads temperature), so a profile is a
+# complete, swappable description whichever algorithm a caller picks.
+risk: average
+num_samples: 600
+plan_horizon: 0.5
+num_knots: 4
+spline_type: cubic
+elite_frac: 0.06
+num_elite: null
+min_std: 0.001
+adapt_covariance: false
+temperature: 0.3
+risk_alpha: 0.1
+risk_gamma: 1.0
+settle_steps: 0
+# Total nworld split across R domains as S = sample_budget // R, floored at
+# num_samples. null = S is just num_samples, regardless of R.
+sample_budget: null
+# Record the best-cost sample's rollout as the prediction. Does not change what
+# gets executed.
+best_sample_execution: false
+# Fraction of the raw actuator ctrlrange used as the sampling bound; 1.0 is a
+# no-op.
+ctrl_range_scale: 1.0
+by_sampling:
+  task: {noise_level: 0.3, init_std: 0.3}
+  joint: {noise_level: 0.3, init_std: 0.3}

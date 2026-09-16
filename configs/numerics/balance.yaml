@@ -1,0 +1,17 @@
+# Solver/integrator options for Balance, shared by its examples and sweeps.
+# Same family as fr3_free: a free rigid body settling onto a
+# surface benefits from the softer elliptic cone / implicit integrator.
+timestep: 0.005
+solver: Newton
+integrator: implicitfast
+cone: elliptic
+jacobian: dense
+impratio: 1.0
+iterations: 5
+ls_iterations: 8
+eulerdamp: true
+warmstart: true
+
+# Unset = inherit the task's _BASELINE, not a MuJoCo default (configs/README.md).
+# tolerance: 1e-8
+# ls_tolerance: 0.01
