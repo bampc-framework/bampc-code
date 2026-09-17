@@ -1,6 +1,15 @@
-# BAMPC
+# BAMPC: Budget-Allocating Model Predictive Control
 
-Code for the paper *Do My Samples Help? Compute Budget Allocation for Real-World Sampling-Based MPC in Contact-Rich Manipulation* (under review).
+**Project page**: [https://bampc-framework.github.io/](https://bampc-framework.github.io/)
+
+Code for the paper **Do My Samples Help? Compute Budget Allocation for Real-World Sampling-Based MPC in Contact-Rich Manipulation** (under review).
+
+<p align="center">
+  <img src="assets/gifs/push-to-track-ensemble.gif" alt="Push to track" width="32%">
+  <img src="assets/gifs/balance-to-track-10-settle.gif" alt="Balancing" width="32%">
+  <img src="assets/gifs/push-to-track-Adaptive.gif" alt="Puck" width="32%">
+</p>
+
 
 Risk-aware sampling-based model predictive control on
 [MuJoCo Warp](https://mujoco.readthedocs.io/en/latest/mjwarp/). Many control
@@ -10,6 +19,15 @@ uncertainty). A risk strategy then aggregates their costs. Deployed
 sim-to-real on a Franka FR3 via ROS 2.
 
 Tasks: Push, Push-FR3, Balance, Balance-FR3, Peg-FR3, Flip-FR3, Curling-FR3.
+
+## Contents
+
+- [Installation](#installation)
+- [Repository structure](#repository-structure)
+- [Running examples](#running-examples)
+- [Reproducing the experiments](#reproducing-the-experiments)
+- [Implementing your own planner](#implementing-your-own-planner)
+- [Implementing your own task](#implementing-your-own-task)
 
 ## Installation
 
